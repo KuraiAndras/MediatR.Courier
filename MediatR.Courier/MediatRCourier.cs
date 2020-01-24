@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MediatR.Courier
 {
-    public sealed class MediatRCourier : ICourier
+    public sealed class MediatRCourier<TNotificationType> : ICourier, INotificationHandler<TNotificationType> where TNotificationType : INotification
     {
         private readonly ConcurrentDictionary<Type, ConcurrentBag<object>> _actions = new ConcurrentDictionary<Type, ConcurrentBag<object>>();
 
@@ -30,6 +32,20 @@ namespace MediatR.Courier
 
             _actions.TryRemove(notificationType, out _);
             _actions.TryAdd(notificationType, newSubscribers);
+        }
+
+        public Task Handle(TNotificationType notification, CancellationToken cancellationToken)
+        {
+            var notificationType = notification.GetType();
+            var completedTask = Task.CompletedTask;
+            if (!_actions.TryGetValue(notificationType, out var subscribers)) return completedTask;
+
+            foreach (var subscriber in subscribers)
+            {
+                ((Action<TNotificationType>)subscriber).Invoke(notification);
+            }
+
+            return completedTask;
         }
     }
 }
