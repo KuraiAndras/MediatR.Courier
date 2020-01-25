@@ -16,7 +16,7 @@ namespace MediatR.Courier.Tests
 
             void NotificationAction(TestNotification _, CancellationToken __) => receivedMessage = true;
 
-            mediatRCourier.TrySubscribe<TestNotification>(NotificationAction);
+            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
@@ -32,7 +32,7 @@ namespace MediatR.Courier.Tests
 
             void NotificationAction(TestNotification _, CancellationToken __) => receivedMessage = true;
 
-            mediatRCourier.TrySubscribe<TestNotification>(NotificationAction);
+            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
             mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
