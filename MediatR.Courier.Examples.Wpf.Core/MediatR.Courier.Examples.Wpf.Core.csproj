@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediatR.Courier.DependencyInjection\MediatR.Courier.DependencyInjection.csproj" />
+    <ProjectReference Include="..\MediatR.Courier.Examples.Shared\MediatR.Courier.Examples.Shared.csproj" />
   </ItemGroup>
 
 </Project>
