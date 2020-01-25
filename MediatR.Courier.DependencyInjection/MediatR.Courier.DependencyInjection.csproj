@@ -2,7 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <PackageId>MediatR.Courier.DependencyInjection</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Kurai András</Authors>
+    <Description>
+      A simple library to treat MediatR notifications sort of like events.
+
+      Main usage target is client applications.
+    </Description>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RepositoryUrl>https://dev.azure.com/kandras9642/MediatR.Courier</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
