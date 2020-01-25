@@ -39,5 +39,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 
             Application.Current.Dispatcher?.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
+
+        public void Dispose() => Courier.UnSubscribe<ExampleNotification>(ExampleNotificationFired);
     }
 }

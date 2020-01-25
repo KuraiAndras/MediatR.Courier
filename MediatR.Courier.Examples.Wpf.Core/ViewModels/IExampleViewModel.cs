@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 {
-    public interface IExampleViewModel : INotifyPropertyChanged
+    public interface IExampleViewModel : INotifyPropertyChanged, IDisposable
     {
         Task InitializeAsync();
         Task IncrementNotificationCountAsync();

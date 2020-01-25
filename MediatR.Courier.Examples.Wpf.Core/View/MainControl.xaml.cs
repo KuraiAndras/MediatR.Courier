@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace MediatR.Courier.Examples.Wpf.Core.View
 {
-    public partial class MainControl : ViewModelUserControlBase<IExampleViewModel>
+    public sealed partial class MainControl : ViewModelUserControlBase<IExampleViewModel>, IDisposable
     {
         public MainControl() => InitializeComponent();
 
@@ -16,5 +16,6 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
         }
 
         private void IncrementClicked(object sender, RoutedEventArgs e) => ViewModel.IncrementNotificationCountAsync();
+        public void Dispose() => ViewModel.Dispose();
     }
 }

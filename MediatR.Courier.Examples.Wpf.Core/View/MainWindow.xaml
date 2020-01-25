@@ -13,9 +13,9 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <local:MainControl Grid.Column="0"/>
-            <local:MainControl Grid.Column="1"/>
-            <local:MainControl Grid.Column="2"/>
+            <local:MainControl Grid.Column="0" x:Name="MainControl0"/>
+            <local:MainControl Grid.Column="1" x:Name="MainControl1"/>
+            <local:MainControl Grid.Column="2" x:Name="MainControl2"/>
         </Grid>
         <Button
             Click="OpenWindowClicked"
