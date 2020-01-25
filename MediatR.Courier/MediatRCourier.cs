@@ -27,17 +27,17 @@ namespace MediatR.Courier
             return completedTask;
         }
 
-        public bool TrySubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification
+        public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
-            if (!_actions.TryGetValue(notificationType, out var subscribers))
+            if (_actions.TryGetValue(notificationType, out var subscribers))
             {
-                return _actions.TryAdd(notificationType, new ConcurrentBag<object>(new[] { action }));
+                subscribers.Add(action);
             }
-
-            subscribers.Add(action);
-
-            return true;
+            else
+            {
+                _actions.TryAdd(notificationType, new ConcurrentBag<object>(new[] { action }));
+            }
         }
 
         public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification

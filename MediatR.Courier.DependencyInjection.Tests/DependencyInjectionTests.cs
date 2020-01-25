@@ -55,7 +55,7 @@ namespace MediatR.Courier.DependencyInjection.Tests
 
             void NotificationAction(TestNotification _, CancellationToken __) => receivedMessage = true;
 
-            courier.TrySubscribe<TestNotification>(NotificationAction);
+            courier.Subscribe<TestNotification>(NotificationAction);
 
             await mediator.Publish(new TestNotification()).ConfigureAwait(false);
 
