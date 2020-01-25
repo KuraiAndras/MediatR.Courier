@@ -7,9 +7,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:MediatR.Courier.Examples.Wpf.Core.View"
     xmlns:viewModels="clr-namespace:MediatR.Courier.Examples.Wpf.Core.ViewModels"
-    mc:Ignorable="d" 
-    d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-
-    </Grid>
+    mc:Ignorable="d"
+    Background="WhiteSmoke"
+    d:DesignHeight="450"
+    d:DesignWidth="800">
+    <d:ViewModelUserControlBase.DataContext>
+        <x:Type Type="viewModels:IExampleViewModel"/>
+    </d:ViewModelUserControlBase.DataContext>
+    <StackPanel Orientation="Vertical">
+        <TextBlock
+            HorizontalAlignment="Center"
+            Text="{Binding NotificationCount}"/>
+        <Border Padding="10"/>
+        <Button
+            Content="Increment Notification Count"
+            Click="IncrementClicked"/>
+    </StackPanel>
 </local:ViewModelUserControlBase>

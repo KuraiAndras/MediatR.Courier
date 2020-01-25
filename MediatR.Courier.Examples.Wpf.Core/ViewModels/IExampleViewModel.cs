@@ -5,8 +5,8 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 {
     public interface IExampleViewModel : INotifyPropertyChanged
     {
-        Task Initialize();
-        Task IncrementNotificationCount();
+        Task InitializeAsync();
+        Task IncrementNotificationCountAsync();
         int NotificationCount { get; }
     }
 }

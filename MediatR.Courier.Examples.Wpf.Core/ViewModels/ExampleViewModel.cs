@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 {
@@ -19,8 +20,8 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 
         private void ExampleNotificationFired(ExampleNotification notification, CancellationToken _) => NotificationCount = notification.NotificationCount;
 
-        public async Task Initialize() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
-        public async Task IncrementNotificationCount() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
+        public async Task InitializeAsync() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
+        public async Task IncrementNotificationCountAsync() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
 
         public int NotificationCount
         {
@@ -36,7 +37,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 
             backingField = value;
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Application.Current.Dispatcher?.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
     }
 }

@@ -5,7 +5,11 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
 {
     public abstract class ViewModelUserControlBase<TViewModel> : UserControl
     {
-        protected ViewModelUserControlBase() => ViewModel = CompositionRoot.Resolve<TViewModel>();
+        protected ViewModelUserControlBase()
+        {
+            ViewModel = CompositionRoot.Resolve<TViewModel>();
+            DataContext = ViewModel;
+        }
 
         protected TViewModel ViewModel { get; }
     }
