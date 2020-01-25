@@ -16,17 +16,18 @@ namespace MediatR.Courier
             var completedTask = Task.CompletedTask;
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return completedTask;
 
+            var cancellationTokenType = typeof(CancellationToken);
             foreach (var subscriber in subscribers)
             {
-                var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
+                var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
                 var invokeMethod = genericActionType.GetMethod("Invoke");
-                invokeMethod?.Invoke(subscriber, new object[] { notification });
+                invokeMethod?.Invoke(subscriber, new object[] { notification, cancellationToken });
             }
 
             return completedTask;
         }
 
-        public bool TrySubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification
+        public bool TrySubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (!_actions.TryGetValue(notificationType, out var subscribers))
@@ -39,7 +40,7 @@ namespace MediatR.Courier
             return true;
         }
 
-        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification
+        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return;
