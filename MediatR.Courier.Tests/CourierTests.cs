@@ -1,8 +1,5 @@
-using MediatR.Courier.DependencyInjection;
-using MediatR.Courier.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Reflection;
+using MediatR.Courier.TestResources;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,74 +7,37 @@ namespace MediatR.Courier.Tests
 {
     public class CourierTests
     {
-        private static (IServiceProvider serviceProvider, IMediator mediator, ICourier courier) SetUpCourier()
+        [Fact]
+        public async Task SubscribedActionInvoked()
         {
-            var services = new ServiceCollection()
-                .AddMediatR(Assembly.GetExecutingAssembly())
-                .AddCourier(Assembly.GetExecutingAssembly());
+            var mediatRCourier = new MediatRCourier();
 
-            var serviceProvider = services.BuildServiceProvider();
+            var receivedMessage = false;
 
-            var mediator = serviceProvider.GetService<IMediator>();
-            var courier = serviceProvider.GetService<ICourier>();
+            void NotificationAction(TestNotification _) => receivedMessage = true;
 
-            return (serviceProvider, mediator, courier);
+            mediatRCourier.TrySubscribe<TestNotification>(NotificationAction);
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+            Assert.True(receivedMessage);
         }
 
         [Fact]
-        public void TestServiceRegistration()
+        public async Task UnSubscribedActionNotInvoked()
         {
-            var (serviceProvider, _, _) = SetUpCourier();
+            var mediatRCourier = new MediatRCourier();
 
-            var handlerInstance = serviceProvider.GetServices<INotificationHandler<ExampleNotification>>();
+            var receivedMessage = false;
 
-            Assert.NotNull(handlerInstance);
-        }
+            void NotificationAction(TestNotification _) => receivedMessage = true;
 
-        [Fact]
-        public void TestHandlerCourierSameInstances()
-        {
-            var (serviceProvider, _, courier) = SetUpCourier();
+            mediatRCourier.TrySubscribe<TestNotification>(NotificationAction);
+            mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
 
-            var mediatRCourier = serviceProvider.GetService<MediatRCourier>();
-            var handlerInstance = serviceProvider.GetService<INotificationHandler<ExampleNotification>>();
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
-            Assert.Same(mediatRCourier, handlerInstance);
-            Assert.Same(mediatRCourier, courier);
-        }
-
-        [Fact]
-        public async Task TestSubscribe()
-        {
-            var (_, mediator, courier) = SetUpCourier();
-
-            var receivedMessage = string.Empty;
-            const string baseMessage = "Test: ";
-
-            void NotificationAction(ExampleNotification n) => receivedMessage = n.Message;
-
-            courier.TrySubscribe<ExampleNotification>(NotificationAction);
-
-            await mediator.Send(new ExampleRequest { Message = baseMessage });
-
-            Assert.True(!string.IsNullOrEmpty(receivedMessage) && receivedMessage.Length > baseMessage.Length);
-        }
-
-        [Fact]
-        public async Task TestUnSubscribe()
-        {
-            var (_, mediator, courier) = SetUpCourier();
-
-            var receivedMessage = string.Empty;
-
-            void NotificationAction(ExampleNotification n) => receivedMessage = n.Message;
-
-            courier.TrySubscribe<ExampleNotification>(NotificationAction);
-            courier.UnSubscribe<ExampleNotification>(NotificationAction);
-
-            await mediator.Send(new ExampleRequest { Message = "Test: " });
-
-            Assert.True(string.IsNullOrEmpty(receivedMessage));
+            Assert.False(receivedMessage);
         }
     }
 }
