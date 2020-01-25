@@ -6,7 +6,5 @@
         xmlns:local="clr-namespace:MediatR.Courier.Examples.Wpf.Core.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <local:MainControl/>
 </Window>

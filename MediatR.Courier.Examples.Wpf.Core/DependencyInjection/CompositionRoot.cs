@@ -9,6 +9,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.DependencyInjection
         private static readonly IServiceProvider _serviceProvider = new ServiceCollection()
             .AddMediatR(AppDomain.CurrentDomain.GetAssemblies())
             .AddCourier(AppDomain.CurrentDomain.GetAssemblies())
+            .AddViewModels()
             .BuildServiceProvider();
 
         public static T Resolve<T>() => _serviceProvider.GetService<T>();
