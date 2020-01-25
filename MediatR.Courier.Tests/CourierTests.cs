@@ -17,8 +17,6 @@ namespace MediatR.Courier.Tests
                 yield return new object[] { new TimeSpan(0L) };
                 yield return new object[] { new TimeSpan(0, 0, 0, 0, 1) };
                 yield return new object[] { new TimeSpan(0, 0, 0, 0, 10) };
-                yield return new object[] { new TimeSpan(0, 0, 0, 0, 100) };
-                yield return new object[] { new TimeSpan(0, 0, 0, 0, 1000) };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
