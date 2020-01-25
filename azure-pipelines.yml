@@ -21,7 +21,7 @@ steps:
 
 # The first task is the dotnet command build, pointing to our csproj file
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
+  displayName: 'dotnet build courier'
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
@@ -30,11 +30,30 @@ steps:
 # The second task is dotnet pack command again pointing to the csproj file
 # The nobuild means the project will not be compiled before running pack, because its already built in above step
 - task: DotNetCoreCLI@2
-  displayName: "dotnet pack"
+  displayName: "dotnet pack courier"
   inputs:
     command: 'pack'
     arguments: '--configuration $(buildConfiguration)'
     packagesToPack: 'MediatR.Courier/MediatR.Courier.csproj'
+    nobuild: true
+    versioningScheme: 'off'
+
+# The first task is the dotnet command build, pointing to our csproj file
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build di'
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(buildConfiguration)'
+    projects: 'MediatR.Courier.DependencyInjection/MediatR.Courier.DependencyInjection.csproj'
+
+# The second task is dotnet pack command again pointing to the csproj file
+# The nobuild means the project will not be compiled before running pack, because its already built in above step
+- task: DotNetCoreCLI@2
+  displayName: "dotnet pack di"
+  inputs:
+    command: 'pack'
+    arguments: '--configuration $(buildConfiguration)'
+    packagesToPack: 'MediatR.Courier.DependencyInjection/MediatR.Courier.DependencyInjection.csproj'
     nobuild: true
     versioningScheme: 'off'
 
