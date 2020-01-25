@@ -6,9 +6,25 @@ using System.Threading.Tasks;
 
 namespace MediatR.Courier
 {
-    public sealed class MediatRCourier<TNotificationType> : ICourier, INotificationHandler<TNotificationType> where TNotificationType : INotification
+    public sealed class MediatRCourier : ICourier, INotificationHandler<INotification>
     {
         private readonly ConcurrentDictionary<Type, ConcurrentBag<object>> _actions = new ConcurrentDictionary<Type, ConcurrentBag<object>>();
+
+        public Task Handle(INotification notification, CancellationToken cancellationToken)
+        {
+            var notificationType = notification.GetType();
+            var completedTask = Task.CompletedTask;
+            if (!_actions.TryGetValue(notificationType, out var subscribers)) return completedTask;
+
+            foreach (var subscriber in subscribers)
+            {
+                var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
+                var invokeMethod = genericActionType.GetMethod("Invoke");
+                invokeMethod?.Invoke(subscriber, new object[] { notification });
+            }
+
+            return completedTask;
+        }
 
         public bool TrySubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification
         {
@@ -32,20 +48,6 @@ namespace MediatR.Courier
 
             _actions.TryRemove(notificationType, out _);
             _actions.TryAdd(notificationType, newSubscribers);
-        }
-
-        public Task Handle(TNotificationType notification, CancellationToken cancellationToken)
-        {
-            var notificationType = notification.GetType();
-            var completedTask = Task.CompletedTask;
-            if (!_actions.TryGetValue(notificationType, out var subscribers)) return completedTask;
-
-            foreach (var subscriber in subscribers)
-            {
-                ((Action<TNotificationType>)subscriber).Invoke(notification);
-            }
-
-            return completedTask;
         }
     }
 }
