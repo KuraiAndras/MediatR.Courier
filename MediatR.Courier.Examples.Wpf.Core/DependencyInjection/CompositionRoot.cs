@@ -1,5 +1,5 @@
 ﻿using MediatR.Courier.DependencyInjection;
-using MediatR.Courier.Examples.Shared.Notifications;
+using MediatR.Courier.Examples.Shared;
 using MediatR.Courier.Examples.Wpf.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -10,7 +10,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.DependencyInjection
     {
         private static readonly IServiceProvider _serviceProvider = new ServiceCollection()
             .AddMediatR(AppDomain.CurrentDomain.GetAssemblies())
-            .AddCourier(typeof(ExampleNotification).Assembly)
+            .AddCourier(typeof(SharedMarkerType).Assembly)
             .AddTransient<IExampleViewModel, ExampleViewModel>()
             .BuildServiceProvider();
 
