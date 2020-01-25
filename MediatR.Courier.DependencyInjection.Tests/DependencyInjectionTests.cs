@@ -1,6 +1,7 @@
 using MediatR.Courier.TestResources;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -52,7 +53,7 @@ namespace MediatR.Courier.DependencyInjection.Tests
 
             var receivedMessage = false;
 
-            void NotificationAction(TestNotification _) => receivedMessage = true;
+            void NotificationAction(TestNotification _, CancellationToken __) => receivedMessage = true;
 
             courier.TrySubscribe<TestNotification>(NotificationAction);
 
