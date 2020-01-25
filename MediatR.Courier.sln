@@ -16,12 +16,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A8938C37-CC38-403C-9696-04D909027374}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		MainRules.ruleset = MainRules.ruleset
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediatR.Courier.Examples.Wpf.Core", "MediatR.Courier.Examples.Wpf.Core\MediatR.Courier.Examples.Wpf.Core.csproj", "{D171C567-8EE4-4091-B695-3CC849C720DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatR.Courier.Examples.Shared", "MediatR.Courier.Examples.Shared\MediatR.Courier.Examples.Shared.csproj", "{9940DAEA-7AF6-4914-BCFF-0ACBFA6C3FB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediatR.Courier.Examples.Shared", "MediatR.Courier.Examples.Shared\MediatR.Courier.Examples.Shared.csproj", "{9940DAEA-7AF6-4914-BCFF-0ACBFA6C3FB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
