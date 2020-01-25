@@ -44,10 +44,10 @@ namespace MediatR.Courier
             var notificationType = typeof(TNotification);
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return;
 
-            var newSubscribers = new ConcurrentBag<object>(subscribers.Where(subscriber => !subscriber.Equals(action)));
+            var remainingSubscribers = new ConcurrentBag<object>(subscribers.Where(subscriber => !subscriber.Equals(action)));
 
             _actions.TryRemove(notificationType, out _);
-            _actions.TryAdd(notificationType, newSubscribers);
+            _actions.TryAdd(notificationType, remainingSubscribers);
         }
     }
 }
