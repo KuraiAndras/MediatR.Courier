@@ -6,7 +6,8 @@ Main usage target is client applications.
 
 ## Usage
 
-Install form [nuget]()
+Install form [nuget](https://www.nuget.org/packages/MediatR.Courier/)
+Microsoft.Extensions.DependencyInjection helper on [nuget](https://www.nuget.org/packages/MediatR.Courier.DependencyInjection/)
 
 ```c#
 private readonly ICourier _courier;
