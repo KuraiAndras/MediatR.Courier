@@ -5,7 +5,7 @@
 
 # the build will trigger on any changes to the master branch
 trigger:
-- master
+- 'master'
 
 # the build will run on a Microsoft hosted agent, using the latest Windows VM Image
 pool:
@@ -49,6 +49,6 @@ steps:
     feedsToUse: 'select'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
-    publishVstsFeed: 'TestFeed'
+    publishVstsFeed: 'MediatR.Courier/CourierFeed'
     versioningScheme: 'off'
     allowPackageConflicts: true
