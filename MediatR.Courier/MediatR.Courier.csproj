@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>MediatR.Courier</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Kurai András</Authors>
+    <Description>
+      A simple library to treat MediatR notifications sort of like events.
+
+      Main usage target is client applications.
+    </Description>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
