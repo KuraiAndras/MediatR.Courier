@@ -2,45 +2,56 @@ trigger:
 - '*'
 
 pool:
+  vmImage: 'windows-latest'
   name: Azure Pipelines
   demands: java
 
-#Your build pipeline references an undefined variable named ‘Parameters.RestoreBuildProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references an undefined variable named ‘Parameters.RestoreBuildProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
-#Your build pipeline references an undefined variable named ‘Parameters.TestProjects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
+variables:
+  buildConfiguration: "Release"
+  SonarToken: "MySonarToken"
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-    projects: '$(Parameters.RestoreBuildProjects)'
 
 - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
   displayName: 'Prepare analysis on SonarCloud'
   inputs:
-    SonarCloud: SonarCloudCourier
-    organization: 'kuraiandras-devops'
-    projectKey: MediatR.Courier
-    projectName: MediatR.Courier
+    SonarCloud: 'SonarCloudCourier'
+    organization: kuraiandras-devops
+    projectKey: 'MediatR.Courier'
+    projectName: 'MediatR.Courier'
+    extraProperties: |
+      sonar.exclusions=**/obj/**,**/*.dll
+      sonar.branch.name=$(Build.SourceBranchName)
+      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+      sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build'
 
 - task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    projects: '$(Parameters.RestoreBuildProjects)'
-    arguments: '--configuration $(BuildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: Test
+  displayName: Run Tests
   inputs:
     command: test
-    projects: '$(Parameters.TestProjects)'
-    arguments: '--configuration $(BuildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger trx'
+    projects: '**/*Tests.csproj'
+    nobuild: true
+
+- script: |
+    dotnet tool install -g dotnet-reportgenerator-globaltool
+    reportgenerator "-reports:$(Build.SourcesDirectory)/**/coverage.opencover.xml" "-targetdir:$(Build.SourcesDirectory)/CodeCoverage" "-reporttypes:HtmlInline_AzurePipelines;Cobertura"
+  displayName: Create Code Coverage Report
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+    reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
 
 - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
   displayName: 'Run Code Analysis'
+  continueOnError: false
 
 - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
   displayName: 'Publish Quality Gate Result'
+  continueOnError: false
