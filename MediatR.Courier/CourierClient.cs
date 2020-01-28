@@ -17,17 +17,17 @@ namespace MediatR.Courier
             var subType = GetType();
 
             _actions = subType.GetInterfaces()
-                .Where(i => i == typeof(ICourierNotificationHandler<>))
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICourierNotificationHandler<>))
                 .Select(i =>
                 {
-                    var methodInfo = i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle));
-                    if (methodInfo is null) throw new MethodNotImplementedException($"Method Handle is not implemented from interface {nameof(INotificationHandler<INotification>)}");
+                    var notificationHandleMethodInfo = i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle));
+                    if (notificationHandleMethodInfo is null) throw new MethodNotImplementedException($"Method Handle is not implemented from interface {nameof(INotificationHandler<INotification>)}");
 
                     var notificationType = i.GetGenericArguments()[0];
 
                     var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken));
 
-                    var action = Activator.CreateInstance(genericActionType);
+                    var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
 
                     var baseSubscribeMethod = _courier.GetType().GetMethod(nameof(ICourier.Subscribe));
 
@@ -35,7 +35,7 @@ namespace MediatR.Courier
 
                     var genericSubscribeMethod = baseSubscribeMethod.MakeGenericMethod(notificationType);
 
-                    genericSubscribeMethod.Invoke(_courier, new[] { action });
+                    genericSubscribeMethod.Invoke(_courier, new object[] { action });
 
                     return action;
                 })
