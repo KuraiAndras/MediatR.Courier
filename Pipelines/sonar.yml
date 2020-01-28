@@ -8,7 +8,6 @@ pool:
 
 variables:
   buildConfiguration: "Release"
-  SonarToken: "MySonarToken"
 
 steps:
 
@@ -21,7 +20,6 @@ steps:
     projectName: 'MediatR.Courier'
     extraProperties: |
       sonar.exclusions=**/obj/**,**/*.dll
-      sonar.branch.name=$(Build.SourceBranchName)
       sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
       sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
 

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <IsPackable>true</IsPackable>
     <PackageId>MediatR.Courier.DependencyInjection</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Authors>Kurai András</Authors>
     <Description>
       A simple library to treat MediatR notifications sort of like events.
@@ -13,6 +13,7 @@
     </Description>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <RepositoryUrl>https://dev.azure.com/kandras9642/MediatR.Courier</RepositoryUrl>
+    <ProjectGuid>E2515D84-5669-48D9-956D-F14E2072CB32</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
