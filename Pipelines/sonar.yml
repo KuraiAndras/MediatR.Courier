@@ -55,25 +55,3 @@ steps:
 - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
   displayName: 'Publish Quality Gate Result'
   continueOnError: false
-  
-- task: PowerShell@2
-  displayName: 'Check Sonar Quality Gate'
-  env:
-    SonarToken: $(SonarToken)
-  inputs:
-    targetType: inline
-    script: |
-      $token = [System.Text.Encoding]::UTF8.GetBytes($env:SonarToken + ":")
-      $base64token = [System.Convert]::ToBase64String($token)
-
-      $basicAuth = [string]::Format("Basic {0}", $base64token)
-      $headers = @{ Authorization = $basicAuth }
-
-      $result = Invoke-RestMethod -Method Get -Uri https://sonarcloud.io/api/qualitygates/project_status?projectKey=myProjectKey -Headers $headers
-      $result | ConvertTo-Json | Write-Host
-
-      if ($result.projectStatus.status -eq "OK") {
-        Write-Host "Quality Gate Succeeded"
-      } else {
-        throw "Quality gate failed"
-      }
