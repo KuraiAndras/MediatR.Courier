@@ -13,6 +13,7 @@
     </Description>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <RepositoryUrl>https://dev.azure.com/kandras9642/MediatR.Courier</RepositoryUrl>
+    <ProjectGuid>E2515D84-5669-48D9-956D-F14E2072CB32</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>

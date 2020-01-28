@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LanguageLevel>8.0</LanguageLevel>
     <UseWPF>true</UseWPF>
+    <ProjectGuid>D171C567-8EE4-4091-B695-3CC849C720DE</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
