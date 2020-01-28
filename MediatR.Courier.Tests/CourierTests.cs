@@ -8,7 +8,7 @@ using Xunit;
 
 namespace MediatR.Courier.Tests
 {
-    public class CourierTests
+    public sealed class CourierTests
     {
         private sealed class AsyncTestData : IEnumerable<object[]>
         {

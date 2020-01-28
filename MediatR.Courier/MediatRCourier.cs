@@ -20,7 +20,7 @@ namespace MediatR.Courier
             foreach (var subscriber in subscribers)
             {
                 var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
-                var invokeMethod = genericActionType.GetMethod("Invoke");
+                var invokeMethod = genericActionType.GetMethod(nameof(Action<object>.Invoke));
                 invokeMethod?.Invoke(subscriber, new object[] { notification, cancellationToken });
             }
 
