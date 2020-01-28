@@ -2,6 +2,7 @@ trigger:
 - '*'
 
 pool:
+  vmImage: 'windows-latest'
   name: Azure Pipelines
   demands: java
 
