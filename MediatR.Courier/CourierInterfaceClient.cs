@@ -6,12 +6,12 @@ using System.Threading;
 
 namespace MediatR.Courier
 {
-    public abstract class CourierClient : IDisposable
+    public abstract class CourierInterfaceClient : IDisposable
     {
         private readonly ICourier _courier;
         private readonly IReadOnlyCollection<object> _actions;
 
-        protected CourierClient(ICourier courier)
+        protected CourierInterfaceClient(ICourier courier)
         {
             _courier = courier;
             var subType = GetType();

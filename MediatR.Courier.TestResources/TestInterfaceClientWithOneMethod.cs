@@ -2,9 +2,9 @@
 
 namespace MediatR.Courier.TestResources
 {
-    public sealed class TestClientWithOneMethod : CourierClient, ICourierNotificationHandler<TestNotification>
+    public sealed class TestInterfaceClientWithOneMethod : CourierInterfaceClient, ICourierNotificationHandler<TestNotification>
     {
-        public TestClientWithOneMethod(ICourier courier) : base(courier)
+        public TestInterfaceClientWithOneMethod(ICourier courier) : base(courier)
         {
         }
 
