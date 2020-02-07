@@ -12,7 +12,9 @@ namespace MediatR.Courier
         {
             _courier = courier;
 
-            // TODO: Register actions on courier
+            var subType = GetType();
+
+            //_actions = subType.
         }
 
         protected virtual void Dispose(bool disposing)

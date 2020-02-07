@@ -29,7 +29,20 @@ namespace MediatR.Courier
 
                     var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
 
-                    var baseSubscribeMethod = _courier.GetType().GetMethod(nameof(ICourier.Subscribe));
+                    var baseSubscribeMethod = _courier.GetType().GetMethods().SingleOrDefault(m =>
+                    {
+                        if (m.Name != nameof(ICourier.Subscribe)) return false;
+
+                        var parameters = m.GetParameters();
+
+                        if (parameters.Length != 1) return false;
+
+                        var parameter = parameters[0];
+
+                        if (!parameter.ParameterType.IsGenericType) return false;
+
+                        return parameter.ParameterType.GetGenericArguments().Length == 2;
+                    });
 
                     if (baseSubscribeMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
 
@@ -51,7 +64,20 @@ namespace MediatR.Courier
             {
                 var notificationType = @delegate.GetType().GetGenericArguments()[0];
 
-                var baseUnSubscribeMethod = _courier.GetType().GetMethod(nameof(ICourier.UnSubscribe));
+                var baseUnSubscribeMethod = _courier.GetType().GetMethods().SingleOrDefault(m =>
+                {
+                    if (m.Name != nameof(ICourier.UnSubscribe)) return false;
+
+                    var parameters = m.GetParameters();
+
+                    if (parameters.Length != 1) return false;
+
+                    var parameter = parameters[0];
+
+                    if (!parameter.ParameterType.IsGenericType) return false;
+
+                    return parameter.ParameterType.GetGenericArguments().Length == 2;
+                });
 
                 if (baseUnSubscribeMethod is null) throw new MethodNotImplementedException();
 
