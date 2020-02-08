@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using MediatR.Courier.Extensions;
 
 namespace MediatR.Courier
 {
     public abstract class CourierInterfaceClient : IDisposable
     {
         private readonly ICourier _courier;
-        private readonly IReadOnlyCollection<object> _actions;
+        private readonly IReadOnlyCollection<Delegate> _actions;
 
         protected CourierInterfaceClient(ICourier courier)
         {
@@ -29,20 +30,7 @@ namespace MediatR.Courier
 
                     var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
 
-                    var baseSubscribeMethod = _courier.GetType().GetMethods().SingleOrDefault(m =>
-                    {
-                        if (m.Name != nameof(ICourier.Subscribe)) return false;
-
-                        var parameters = m.GetParameters();
-
-                        if (parameters.Length != 1) return false;
-
-                        var parameter = parameters[0];
-
-                        if (!parameter.ParameterType.IsGenericType) return false;
-
-                        return parameter.ParameterType.GetGenericArguments().Length == 2;
-                    });
+                    var baseSubscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation);
 
                     if (baseSubscribeMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
 
@@ -64,26 +52,13 @@ namespace MediatR.Courier
             {
                 var notificationType = @delegate.GetType().GetGenericArguments()[0];
 
-                var baseUnSubscribeMethod = _courier.GetType().GetMethods().SingleOrDefault(m =>
-                {
-                    if (m.Name != nameof(ICourier.UnSubscribe)) return false;
-
-                    var parameters = m.GetParameters();
-
-                    if (parameters.Length != 1) return false;
-
-                    var parameter = parameters[0];
-
-                    if (!parameter.ParameterType.IsGenericType) return false;
-
-                    return parameter.ParameterType.GetGenericArguments().Length == 2;
-                });
+                var baseUnSubscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.Cancellation);
 
                 if (baseUnSubscribeMethod is null) throw new MethodNotImplementedException();
 
                 var genericUnSubscribeMethod = baseUnSubscribeMethod.MakeGenericMethod(notificationType);
 
-                genericUnSubscribeMethod.Invoke(_courier, new[] { @delegate });
+                genericUnSubscribeMethod.Invoke(_courier, new object[] { @delegate });
             }
         }
 
