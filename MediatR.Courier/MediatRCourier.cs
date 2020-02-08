@@ -8,7 +8,7 @@ namespace MediatR.Courier
 {
     public sealed class MediatRCourier : ICourier, INotificationHandler<INotification>
     {
-        private readonly ConcurrentDictionary<Type, ConcurrentBag<(object action, bool needsToken)>> _actions = new ConcurrentDictionary<Type, ConcurrentBag<(object action, bool needsToken)>>();
+        private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new ConcurrentDictionary<Type, ConcurrentBag<(Delegate, bool)>>();
 
         public Task Handle(INotification notification, CancellationToken cancellationToken)
         {
@@ -16,12 +16,16 @@ namespace MediatR.Courier
             var completedTask = Task.CompletedTask;
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return completedTask;
 
-            var cancellationTokenType = typeof(CancellationToken);
-            foreach (var subscriber in subscribers)
+            foreach (var (action, needsToken) in subscribers)
             {
-                var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
-                var invokeMethod = genericActionType.GetMethod(nameof(Action<object>.Invoke));
-                invokeMethod?.Invoke(subscriber.action, new object[] { notification, cancellationToken });
+                if (needsToken)
+                {
+                    action.DynamicInvoke(notification, cancellationToken);
+                }
+                else
+                {
+                    action.DynamicInvoke(notification);
+                }
             }
 
             return completedTask;
@@ -38,7 +42,7 @@ namespace MediatR.Courier
             }
             else
             {
-                _actions.TryAdd(notificationType, new ConcurrentBag<(object, bool)>(new ValueTuple<object, bool>[] { (action, true) }));
+                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new ValueTuple<Delegate, bool>[] { (action, true) }));
             }
         }
 
@@ -49,7 +53,7 @@ namespace MediatR.Courier
             var notificationType = typeof(TNotification);
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return;
 
-            var remainingSubscribers = new ConcurrentBag<(object, bool)>(subscribers.Where(subscriber => !subscriber.action.Equals(action)));
+            var remainingSubscribers = new ConcurrentBag<(Delegate, bool)>(subscribers.Where(subscriber => !subscriber.action.Equals(action)));
 
             _actions.TryRemove(notificationType, out _);
             _actions.TryAdd(notificationType, remainingSubscribers);
