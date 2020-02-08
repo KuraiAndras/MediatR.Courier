@@ -10,7 +10,7 @@ namespace MediatR.Courier
     public abstract class CourierInterfaceClient : IDisposable
     {
         private readonly ICourier _courier;
-        private readonly IReadOnlyCollection<Delegate> _actions;
+        private readonly ICollection<Delegate> _actions;
 
         protected CourierInterfaceClient(ICourier courier)
         {
@@ -30,18 +30,13 @@ namespace MediatR.Courier
 
                     var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
 
-                    var baseSubscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation);
+                    var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation, notificationType);
 
-                    if (baseSubscribeMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
-
-                    var genericSubscribeMethod = baseSubscribeMethod.MakeGenericMethod(notificationType);
-
-                    genericSubscribeMethod.Invoke(_courier, new object[] { action });
+                    subscribeMethod.Invoke(_courier, new object[] { action });
 
                     return action;
                 })
-                .ToList()
-                .AsReadOnly();
+                .ToList();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -52,14 +47,12 @@ namespace MediatR.Courier
             {
                 var notificationType = @delegate.GetType().GetGenericArguments()[0];
 
-                var baseUnSubscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.Cancellation);
+                var unSubscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.Cancellation, notificationType);
 
-                if (baseUnSubscribeMethod is null) throw new MethodNotImplementedException();
-
-                var genericUnSubscribeMethod = baseUnSubscribeMethod.MakeGenericMethod(notificationType);
-
-                genericUnSubscribeMethod.Invoke(_courier, new object[] { @delegate });
+                unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
             }
+
+            _actions.Clear();
         }
 
         public void Dispose()

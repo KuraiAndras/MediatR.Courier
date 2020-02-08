@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using MediatR.Courier.Exceptions;
 
 namespace MediatR.Courier.Extensions
 {
     internal static class ICourierExtensions
     {
-        internal static MethodInfo GetCourierMethod(this ICourier courier, CourierMethodName methodName, CourierMethodType methodType)
+        internal static MethodInfo GetCourierMethod(this ICourier courier, CourierMethodName methodName, CourierMethodType methodType, Type notificationType)
         {
             string methodNameString;
             switch (methodName)
@@ -34,7 +35,7 @@ namespace MediatR.Courier.Extensions
                     throw new ArgumentOutOfRangeException(nameof(methodType), methodType, null);
             }
 
-            return courier
+            var baseMethod = courier
                 .GetType()
                 .GetMethods()
                 .SingleOrDefault(m =>
@@ -51,6 +52,10 @@ namespace MediatR.Courier.Extensions
 
                     return parameter.ParameterType.GetGenericArguments().Length == genericArgumentCount;
                 });
+
+            if (baseMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
+
+            return baseMethod.MakeGenericMethod(notificationType);
         }
     }
 }
