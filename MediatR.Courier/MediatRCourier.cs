@@ -31,29 +31,35 @@ namespace MediatR.Courier
             return completedTask;
         }
 
-        public void Subscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => throw new NotImplementedException();
+        public void Subscribe<TNotification>(Action<TNotification> action) where TNotification : INotification =>
+            SubscribeInternal<TNotification>(action, false);
 
-        public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification
+        public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification =>
+            SubscribeInternal<TNotification>(action, true);
+
+        private void SubscribeInternal<TNotification>(Delegate @delegate, bool needsCancellation) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (_actions.TryGetValue(notificationType, out var subscribers))
             {
-                subscribers.Add((action, true));
+                subscribers.Add((@delegate, needsCancellation));
             }
             else
             {
-                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new ValueTuple<Delegate, bool>[] { (action, true) }));
+                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new ValueTuple<Delegate, bool>[] { (@delegate, needsCancellation) }));
             }
         }
 
-        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => throw new NotImplementedException();
+        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => UnSubscribeInternal<TNotification>(action);
 
-        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification
+        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification => UnSubscribeInternal<TNotification>(action);
+
+        private void UnSubscribeInternal<TNotification>(Delegate @delegate) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return;
 
-            var remainingSubscribers = new ConcurrentBag<(Delegate, bool)>(subscribers.Where(subscriber => !subscriber.action.Equals(action)));
+            var remainingSubscribers = new ConcurrentBag<(Delegate, bool)>(subscribers.Where(subscriber => !subscriber.action.Equals(@delegate)));
 
             _actions.TryRemove(notificationType, out _);
             _actions.TryAdd(notificationType, remainingSubscribers);
