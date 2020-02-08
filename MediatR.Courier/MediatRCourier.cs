@@ -37,16 +37,16 @@ namespace MediatR.Courier
         public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification =>
             SubscribeInternal<TNotification>(action, true);
 
-        private void SubscribeInternal<TNotification>(Delegate @delegate, bool needsCancellation) where TNotification : INotification
+        private void SubscribeInternal<TNotification>(Delegate action, bool needsCancellation) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (_actions.TryGetValue(notificationType, out var subscribers))
             {
-                subscribers.Add((@delegate, needsCancellation));
+                subscribers.Add((action, needsCancellation));
             }
             else
             {
-                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new ValueTuple<Delegate, bool>[] { (@delegate, needsCancellation) }));
+                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new ValueTuple<Delegate, bool>[] { (action, needsCancellation) }));
             }
         }
 
