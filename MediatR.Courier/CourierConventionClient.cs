@@ -60,7 +60,7 @@ namespace MediatR.Courier
                 var parameters = method.GetParameters();
 
                 var notificationType = parameters[0].ParameterType;
-                if (!baseNotificationType.IsAssignableFrom(notificationType)) return;
+                if (!baseNotificationType.IsAssignableFrom(notificationType)) continue;
 
                 var (genericActionType, hasCancellation) = parameters.Length == 1
                     ? (typeof(Action<>).MakeGenericType(notificationType), false)
