@@ -32,12 +32,12 @@ namespace MediatR.Courier
         }
 
         public void Subscribe<TNotification>(Action<TNotification> action) where TNotification : INotification =>
-            SubscribeInternal<TNotification>(action, false);
+            Subscribe<TNotification>(action, false);
 
         public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification =>
-            SubscribeInternal<TNotification>(action, true);
+            Subscribe<TNotification>(action, true);
 
-        private void SubscribeInternal<TNotification>(Delegate action, bool needsCancellation) where TNotification : INotification
+        private void Subscribe<TNotification>(Delegate action, bool needsCancellation) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (_actions.TryGetValue(notificationType, out var subscribers))
@@ -50,11 +50,11 @@ namespace MediatR.Courier
             }
         }
 
-        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => UnSubscribeInternal<TNotification>(action);
+        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate) action);
 
-        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification => UnSubscribeInternal<TNotification>(action);
+        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate) action);
 
-        private void UnSubscribeInternal<TNotification>(Delegate @delegate) where TNotification : INotification
+        private void UnSubscribe<TNotification>(Delegate @delegate) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return;

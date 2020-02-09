@@ -18,5 +18,19 @@ namespace MediatR.Courier.Tests
 
             Assert.True(testClient.MessageReceived);
         }
+
+        [Fact]
+        public async Task ConventionClientAfterDisposeNotInvoked()
+        {
+            var courier = new MediatRCourier();
+
+            var testClient = new TestConventionClient(courier);
+
+            testClient.Dispose();
+
+            await courier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+            Assert.False(testClient.MessageReceived);
+        }
     }
 }

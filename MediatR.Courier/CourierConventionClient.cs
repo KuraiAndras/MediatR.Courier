@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace MediatR.Courier
@@ -33,29 +34,29 @@ namespace MediatR.Courier
                     switch (parameters.Length)
                     {
                         case 1:
-                        {
-                            var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
+                            {
+                                var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
 
-                            var action = Delegate.CreateDelegate(genericActionType, this, method);
+                                var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                            var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.NoCancellation, notificationType);
+                                var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.NoCancellation, notificationType);
 
-                            subscribeMethod.Invoke(_courier, new object[] { action });
+                                subscribeMethod.Invoke(_courier, new object[] { action });
 
-                            return action;
-                        }
+                                return action;
+                            }
                         case 2:
-                        {
-                            var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
+                            {
+                                var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
 
-                            var action = Delegate.CreateDelegate(genericActionType, this, method);
+                                var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                            var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation, notificationType);
+                                var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation, notificationType);
 
-                            subscribeMethod.Invoke(_courier, new object[] { action });
+                                subscribeMethod.Invoke(_courier, new object[] { action });
 
-                            return action;
-                        }
+                                return action;
+                            }
                         default:
                             return null;
                     }
@@ -67,9 +68,45 @@ namespace MediatR.Courier
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
+
+            var baseNotificationType = typeof(INotification);
+            var cancellationTokenType = typeof(CancellationToken);
             foreach (var @delegate in _actions)
             {
-                // TODO: unsubscribe
+                var method = @delegate.GetMethodInfo();
+
+                var parameters = method.GetParameters();
+
+                var notificationType = parameters[0].ParameterType;
+                if (!baseNotificationType.IsAssignableFrom(notificationType)) return;
+
+                switch (parameters.Length)
+                {
+                    case 1:
+                        {
+                            var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
+
+                            var action = Delegate.CreateDelegate(genericActionType, this, method);
+
+                            var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.NoCancellation, notificationType);
+
+                            subscribeMethod.Invoke(_courier, new object[] { action });
+
+                            return;
+                        }
+                    case 2:
+                        {
+                            var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
+
+                            var action = Delegate.CreateDelegate(genericActionType, this, method);
+
+                            var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.Cancellation, notificationType);
+
+                            subscribeMethod.Invoke(_courier, new object[] { action });
+
+                            return;
+                        }
+                }
             }
 
             _actions.Clear();
