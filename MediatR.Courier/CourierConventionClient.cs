@@ -31,35 +31,17 @@ namespace MediatR.Courier
                     var notificationType = parameters[0].ParameterType;
                     if (!baseNotificationType.IsAssignableFrom(notificationType)) return null;
 
-                    switch (parameters.Length)
-                    {
-                        case 1:
-                            {
-                                var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
+                    var (genericActionType, hasCancellation) = parameters.Length == 1
+                        ? (typeof(Action<>).MakeGenericType(notificationType), false)
+                        : (typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType), true);
 
-                                var action = Delegate.CreateDelegate(genericActionType, this, method);
+                    var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                                var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), false, notificationType);
+                    var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), hasCancellation, notificationType);
 
-                                subscribeMethod.Invoke(_courier, new object[] { action });
+                    subscribeMethod.Invoke(_courier, new object[] { action });
 
-                                return action;
-                            }
-                        case 2:
-                            {
-                                var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
-
-                                var action = Delegate.CreateDelegate(genericActionType, this, method);
-
-                                var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), true, notificationType);
-
-                                subscribeMethod.Invoke(_courier, new object[] { action });
-
-                                return action;
-                            }
-                        default:
-                            return null;
-                    }
+                    return action;
                 })
                 .Where(m => !(m is null))
                 .ToList();
@@ -80,33 +62,15 @@ namespace MediatR.Courier
                 var notificationType = parameters[0].ParameterType;
                 if (!baseNotificationType.IsAssignableFrom(notificationType)) return;
 
-                switch (parameters.Length)
-                {
-                    case 1:
-                        {
-                            var genericActionType = typeof(Action<>).MakeGenericType(notificationType);
+                var (genericActionType, hasCancellation) = parameters.Length == 1
+                    ? (typeof(Action<>).MakeGenericType(notificationType), false)
+                    : (typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType), true);
 
-                            var action = Delegate.CreateDelegate(genericActionType, this, method);
+                var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                            var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), false, notificationType);
+                var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), hasCancellation, notificationType);
 
-                            subscribeMethod.Invoke(_courier, new object[] { action });
-
-                            return;
-                        }
-                    case 2:
-                        {
-                            var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType);
-
-                            var action = Delegate.CreateDelegate(genericActionType, this, method);
-
-                            var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), true, notificationType);
-
-                            subscribeMethod.Invoke(_courier, new object[] { action });
-
-                            return;
-                        }
-                }
+                unSubscribeMethod.Invoke(_courier, new object[] { action });
             }
 
             _actions.Clear();

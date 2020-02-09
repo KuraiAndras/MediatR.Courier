@@ -1,9 +1,9 @@
 ﻿using MediatR.Courier.Exceptions;
+using MediatR.Courier.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using MediatR.Courier.Extensions;
 
 namespace MediatR.Courier
 {
@@ -18,7 +18,7 @@ namespace MediatR.Courier
             var subType = GetType();
 
             _actions = subType.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICourierNotificationHandler<>))
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICourierNotificationHandler<>) && !(i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle)) is null))
                 .Select(i =>
                 {
                     var notificationHandleMethodInfo = i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle));
