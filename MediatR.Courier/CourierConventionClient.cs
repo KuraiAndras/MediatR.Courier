@@ -39,7 +39,7 @@ namespace MediatR.Courier
 
                                 var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                                var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.NoCancellation, notificationType);
+                                var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), false, notificationType);
 
                                 subscribeMethod.Invoke(_courier, new object[] { action });
 
@@ -51,7 +51,7 @@ namespace MediatR.Courier
 
                                 var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                                var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation, notificationType);
+                                var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), true, notificationType);
 
                                 subscribeMethod.Invoke(_courier, new object[] { action });
 
@@ -88,7 +88,7 @@ namespace MediatR.Courier
 
                             var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                            var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.NoCancellation, notificationType);
+                            var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), false, notificationType);
 
                             subscribeMethod.Invoke(_courier, new object[] { action });
 
@@ -100,7 +100,7 @@ namespace MediatR.Courier
 
                             var action = Delegate.CreateDelegate(genericActionType, this, method);
 
-                            var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.Cancellation, notificationType);
+                            var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), true, notificationType);
 
                             subscribeMethod.Invoke(_courier, new object[] { action });
 

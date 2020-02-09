@@ -30,7 +30,7 @@ namespace MediatR.Courier
 
                     var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
 
-                    var subscribeMethod = _courier.GetCourierMethod(CourierMethodName.Subscribe, CourierMethodType.Cancellation, notificationType);
+                    var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), true, notificationType);
 
                     subscribeMethod.Invoke(_courier, new object[] { action });
 
@@ -47,7 +47,7 @@ namespace MediatR.Courier
             {
                 var notificationType = @delegate.GetType().GetGenericArguments()[0];
 
-                var unSubscribeMethod = _courier.GetCourierMethod(CourierMethodName.UnSubscribe, CourierMethodType.Cancellation, notificationType);
+                var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), true, notificationType);
 
                 unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
             }
