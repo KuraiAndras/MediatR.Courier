@@ -11,3 +11,6 @@ csharp_style_expression_bodied_constructors = true:warning
 
 # S4144: Methods should not have identical implementations
 dotnet_diagnostic.S4144.severity = warning
+
+# IDE0060: Remove unused parameter
+dotnet_code_quality_unused_parameters = all:warning

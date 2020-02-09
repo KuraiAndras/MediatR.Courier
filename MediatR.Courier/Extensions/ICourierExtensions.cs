@@ -7,9 +7,9 @@ namespace MediatR.Courier.Extensions
 {
     internal static class ICourierExtensions
     {
-        internal static MethodInfo GetCourierMethod(this ICourier courier, string methodName, bool hasCancellation, Type notificationType)
+        internal static MethodInfo GetCourierMethod(this ICourier courier, string methodName, bool actionHasCancellation, Type notificationType)
         {
-            var parameterGenericArgumentCount = hasCancellation ? 2 : 1;
+            var parameterGenericArgumentCount = actionHasCancellation ? 2 : 1;
 
             var baseMethod = courier
                 .GetType()

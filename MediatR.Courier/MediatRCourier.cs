@@ -32,27 +32,27 @@ namespace MediatR.Courier
         }
 
         public void Subscribe<TNotification>(Action<TNotification> action) where TNotification : INotification =>
-            Subscribe<TNotification>(action, false);
+            Subscribe<TNotification>((action, false));
 
         public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification =>
-            Subscribe<TNotification>(action, true);
+            Subscribe<TNotification>((action, true));
 
-        private void Subscribe<TNotification>(Delegate action, bool needsCancellation) where TNotification : INotification
+        private void Subscribe<TNotification>(ValueTuple<Delegate, bool> subscriber) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
             if (_actions.TryGetValue(notificationType, out var subscribers))
             {
-                subscribers.Add((action, needsCancellation));
+                subscribers.Add(subscriber);
             }
             else
             {
-                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new ValueTuple<Delegate, bool>[] { (action, needsCancellation) }));
+                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new[] { subscriber }));
             }
         }
 
-        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate) action);
+        public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate)action);
 
-        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate) action);
+        public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate)action);
 
         private void UnSubscribe<TNotification>(Delegate @delegate) where TNotification : INotification
         {

@@ -31,17 +31,17 @@ namespace MediatR.Courier
                     var notificationType = parameters[0].ParameterType;
                     if (!baseNotificationType.IsAssignableFrom(notificationType)) return null;
 
-                    var (genericActionType, hasCancellation) = parameters.Length == 1
+                    var (actionType, hasCancellation) = parameters.Length == 1
                         ? (typeof(Action<>).MakeGenericType(notificationType), false)
                         : (typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType), true);
 
-                    var action = Delegate.CreateDelegate(genericActionType, this, method);
+                    var @delegate = Delegate.CreateDelegate(actionType, this, method);
 
                     var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), hasCancellation, notificationType);
 
-                    subscribeMethod.Invoke(_courier, new object[] { action });
+                    subscribeMethod.Invoke(_courier, new object[] { @delegate });
 
-                    return action;
+                    return @delegate;
                 })
                 .Where(m => !(m is null))
                 .ToList();
@@ -51,26 +51,17 @@ namespace MediatR.Courier
         {
             if (!disposing) return;
 
-            var baseNotificationType = typeof(INotification);
-            var cancellationTokenType = typeof(CancellationToken);
             foreach (var @delegate in _actions)
             {
-                var method = @delegate.GetMethodInfo();
-
-                var parameters = method.GetParameters();
+                var parameters = @delegate.GetMethodInfo().GetParameters();
 
                 var notificationType = parameters[0].ParameterType;
-                if (!baseNotificationType.IsAssignableFrom(notificationType)) continue;
 
-                var (genericActionType, hasCancellation) = parameters.Length == 1
-                    ? (typeof(Action<>).MakeGenericType(notificationType), false)
-                    : (typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType), true);
-
-                var action = Delegate.CreateDelegate(genericActionType, this, method);
+                var hasCancellation = parameters.Length != 1;
 
                 var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), hasCancellation, notificationType);
 
-                unSubscribeMethod.Invoke(_courier, new object[] { action });
+                unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
             }
 
             _actions.Clear();

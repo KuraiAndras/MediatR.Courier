@@ -5,7 +5,7 @@ using Xunit;
 
 namespace MediatR.Courier.Tests
 {
-    public sealed class CourierClientTests
+    public sealed class InterfaceClientTests
     {
         [Fact]
         public async Task SubscribedMethodInvoked()

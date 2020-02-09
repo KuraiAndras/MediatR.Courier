@@ -8,6 +8,6 @@
 
         public bool MessageReceived { get; private set; }
 
-        public void Handle(TestNotification notification) => MessageReceived = true;
+        public void Handle(TestNotification _) => MessageReceived = true;
     }
 }
