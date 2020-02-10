@@ -21,7 +21,7 @@ namespace MediatR.Courier.Tests
                 yield return new object[] { typeof(TestConventionClient1NoCancellation) };
                 yield return new object[] { typeof(TestConventionClient1Cancellation) };
                 yield return new object[] { typeof(TestInterfaceClient1Cancellation) };
-                yield return new object[] { typeof(TestConventionClient3Mixed) };
+                yield return new object[] { typeof(TestConventionClientMixed) };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
