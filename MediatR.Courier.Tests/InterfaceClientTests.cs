@@ -12,7 +12,7 @@ namespace MediatR.Courier.Tests
         {
             var mediatRCourier = new MediatRCourier();
 
-            var testClient = new TestInterfaceClientWithOneMethod(mediatRCourier);
+            var testClient = new TestInterfaceClient1Cancellation(mediatRCourier);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
@@ -38,7 +38,7 @@ namespace MediatR.Courier.Tests
         {
             var mediatRCourier = new MediatRCourier();
 
-            var testClient = new TestInterfaceClientWithOneMethod(mediatRCourier);
+            var testClient = new TestInterfaceClient1Cancellation(mediatRCourier);
 
             testClient.Dispose();
 

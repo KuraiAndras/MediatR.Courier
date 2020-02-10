@@ -1,7 +1,7 @@
 ﻿[*.cs]
 
 # RCS1090: Call 'ConfigureAwait(false)'.
-dotnet_diagnostic.RCS1090.severity = suggestion
+dotnet_diagnostic.RCS1090.severity = warning
 
 # IDE0022: Use expression body for methods
 csharp_style_expression_bodied_methods = true:warning
