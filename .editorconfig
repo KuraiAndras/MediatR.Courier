@@ -14,3 +14,6 @@ dotnet_diagnostic.S4144.severity = warning
 
 # IDE0060: Remove unused parameter
 dotnet_code_quality_unused_parameters = all:warning
+
+# S4136: Method overloads should be grouped together
+dotnet_diagnostic.S4136.severity = warning
