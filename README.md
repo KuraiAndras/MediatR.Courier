@@ -117,9 +117,11 @@ To make subscribing and unsubscribing from events easier this library provides t
 If your inherit from these classes all you have to do is implement your handlers as public methods, and the base class handles the subscription of each method in the constructor, and unsubscribes them when calling Dispose.
 
 The interface client registers implementations of the ICourierNotificationHandler, while the convention client register methods using a simple convention. It will register your methods if they:
-* Have one parameter which implements INotification
-* Have two parameters, the first implements INotification, and the second one is CancellationToken.
-* Any other method is not subscribed to the Courier
+* Return void.
+* Either: have one parameter which implements INotification.
+* Or: two parameters, the first implements INotification, and the second one is CancellationToken.
+
+Any other method is not subscribed to the Courier.
 
 Using interfaces:
 ```c#
@@ -157,18 +159,18 @@ public sealed class EventHandlerExample : CourierConventionClient
 
         // Called
         public void Handle(TestNotification _) => MessageReceivedCount++;
-
         // Called
         public void Handle(TestNotification _, CancellationToken __) => MessageReceivedCount++;
-
+        // Called
+        public void HandleOptional(TestNotification _ = default) => MessageReceivedCount++;
+        // Called
+        public void HandleOptional2(TestNotification _, CancellationToken __ = default) => MessageReceivedCount++;
+        // Called
+        public void HandleOptional3(TestNotification _ = default, CancellationToken __ = default) => MessageReceivedCount++;
         // Not Called
-        public void Handle(TestNotification _, CancellationToken __, SomeOtherType ___) => MessageReceivedCount++;
-
+        public void Handle(TestNotification _, CancellationToken __, TestConventionClient1Cancellation ___) => MessageReceivedCount++;
         // Not Called
-        public void Handle(CancellationToken __, TestNotification _) => MessageReceivedCount++;
-
-        // Not Called
-        public int Handle(CancellationToken __, TestNotification _) => MessageReceivedCount++;
+        public int HandleReturnsInt(TestNotification _) => MessageReceivedCount++;
     }
 ```
 ## Gotchas

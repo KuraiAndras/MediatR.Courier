@@ -24,6 +24,8 @@ namespace MediatR.Courier
             _actions = subType.GetMethods()
                 .Select(method =>
                 {
+                    if (method.ReturnParameter?.ParameterType != typeof(void)) return null;
+
                     var parameters = method.GetParameters();
 
                     if (parameters.Length > 2 || parameters.Length == 0) return null;
