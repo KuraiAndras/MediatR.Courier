@@ -1,4 +1,5 @@
 ﻿using MediatR.Courier.Exceptions;
+using MediatR.Courier.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,18 +7,18 @@ using System.Threading;
 
 namespace MediatR.Courier
 {
-    public abstract class CourierClient : IDisposable
+    public abstract class CourierInterfaceClient : IDisposable
     {
         private readonly ICourier _courier;
-        private readonly IReadOnlyCollection<object> _actions;
+        private readonly ICollection<Delegate> _actions;
 
-        protected CourierClient(ICourier courier)
+        protected CourierInterfaceClient(ICourier courier)
         {
             _courier = courier;
             var subType = GetType();
 
             _actions = subType.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICourierNotificationHandler<>))
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICourierNotificationHandler<>) && !(i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle)) is null))
                 .Select(i =>
                 {
                     var notificationHandleMethodInfo = i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle));
@@ -29,18 +30,13 @@ namespace MediatR.Courier
 
                     var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
 
-                    var baseSubscribeMethod = _courier.GetType().GetMethod(nameof(ICourier.Subscribe));
+                    var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), true, notificationType);
 
-                    if (baseSubscribeMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
-
-                    var genericSubscribeMethod = baseSubscribeMethod.MakeGenericMethod(notificationType);
-
-                    genericSubscribeMethod.Invoke(_courier, new object[] { action });
+                    subscribeMethod.Invoke(_courier, new object[] { action });
 
                     return action;
                 })
-                .ToList()
-                .AsReadOnly();
+                .ToList();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -51,14 +47,12 @@ namespace MediatR.Courier
             {
                 var notificationType = @delegate.GetType().GetGenericArguments()[0];
 
-                var baseUnSubscribeMethod = _courier.GetType().GetMethod(nameof(ICourier.UnSubscribe));
+                var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), true, notificationType);
 
-                if (baseUnSubscribeMethod is null) throw new MethodNotImplementedException();
-
-                var genericUnSubscribeMethod = baseUnSubscribeMethod.MakeGenericMethod(notificationType);
-
-                genericUnSubscribeMethod.Invoke(_courier, new[] { @delegate });
+                unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
             }
+
+            _actions.Clear();
         }
 
         public void Dispose()
