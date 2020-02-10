@@ -72,16 +72,19 @@ namespace MediatR.Courier.Tests
         {
             var mediatRCourier = new MediatRCourier();
 
-            var receivedMessage = false;
+            var receivedMessageCount = 0;
 
-            void NotificationAction(TestNotification _, CancellationToken __) => receivedMessage = true;
+            void NotificationAction(TestNotification _, CancellationToken __) => ++receivedMessageCount;
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
             mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
-            Assert.False(receivedMessage);
+            Assert.True(receivedMessageCount == 1);
         }
     }
 }

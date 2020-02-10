@@ -5,14 +5,14 @@ using Xunit;
 
 namespace MediatR.Courier.Tests
 {
-    public sealed class CourierClientTests
+    public sealed class InterfaceClientTests
     {
         [Fact]
         public async Task SubscribedMethodInvoked()
         {
             var mediatRCourier = new MediatRCourier();
 
-            var testClient = new TestClientWithOneMethod(mediatRCourier);
+            var testClient = new TestInterfaceClient1Cancellation(mediatRCourier);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
@@ -24,7 +24,7 @@ namespace MediatR.Courier.Tests
         {
             var mediatRCourier = new MediatRCourier();
 
-            var testClient = new TestClientWithTwoMethods(mediatRCourier);
+            var testClient = new TestInterfaceClientWithTwoMethods(mediatRCourier);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
             await mediatRCourier.Handle(new TestNotification2(), CancellationToken.None).ConfigureAwait(false);
@@ -38,7 +38,7 @@ namespace MediatR.Courier.Tests
         {
             var mediatRCourier = new MediatRCourier();
 
-            var testClient = new TestClientWithOneMethod(mediatRCourier);
+            var testClient = new TestInterfaceClient1Cancellation(mediatRCourier);
 
             testClient.Dispose();
 
@@ -52,7 +52,7 @@ namespace MediatR.Courier.Tests
         {
             var mediatRCourier = new MediatRCourier();
 
-            var testClient = new TestClientWithTwoMethods(mediatRCourier);
+            var testClient = new TestInterfaceClientWithTwoMethods(mediatRCourier);
 
             testClient.Dispose();
 
