@@ -37,6 +37,10 @@ namespace MediatR.Courier
         public void Subscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification =>
             Subscribe<TNotification>((action, true));
 
+        public void Subscribe<TNotification>(Func<TNotification, Task> action) where TNotification : INotification => throw new NotImplementedException();
+
+        public void Subscribe<TNotification>(Func<TNotification, CancellationToken, Task> action) where TNotification : INotification => throw new NotImplementedException();
+
         private void Subscribe<TNotification>(ValueTuple<Delegate, bool> subscriber) where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
@@ -53,6 +57,10 @@ namespace MediatR.Courier
         public void UnSubscribe<TNotification>(Action<TNotification> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate)action);
 
         public void UnSubscribe<TNotification>(Action<TNotification, CancellationToken> action) where TNotification : INotification => UnSubscribe<TNotification>((Delegate)action);
+
+        public void UnSubscribe<TNotification>(Func<TNotification, Task> action) where TNotification : INotification => throw new NotImplementedException();
+
+        public void UnSubscribe<TNotification>(Func<TNotification, CancellationToken, Task> action) where TNotification : INotification => throw new NotImplementedException();
 
         private void UnSubscribe<TNotification>(Delegate @delegate) where TNotification : INotification
         {
