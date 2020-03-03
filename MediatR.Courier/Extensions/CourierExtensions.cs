@@ -16,7 +16,8 @@ namespace MediatR.Courier.Extensions
             MethodInfo handler,
             Delegate handlerDelegate)
         {
-            var methodGenericArguments = handler.GetParameters();
+            var methodGenericArguments = new List<Type>(handler.GetParameters().Select(p => p.ParameterType));
+            if (handler.ReturnType == typeof(Task)) methodGenericArguments.Add(handler.ReturnType);
 
             var baseMethod = typeof(ICourier)
                 .GetMethods()
@@ -30,30 +31,33 @@ namespace MediatR.Courier.Extensions
 
                     var parameter = parameters[0];
 
-                    return parameter.ParameterType.IsGenericType
-                           && parameter
-                               .ParameterType
-                               .GetGenericArguments()
-                               .Skip(1)
-                               .SequenceEquivalent(methodGenericArguments
-                                   .Skip(1)
-                                   .Select(a => a.ParameterType));
+                    if (!parameter.ParameterType.IsGenericType) return false;
+
+                    var parameterGenericArguments = parameter
+                        .ParameterType
+                        .GetGenericArguments();
+
+                    return parameterGenericArguments
+                        .Skip(1)
+                        .SequenceEquivalent(methodGenericArguments
+                            .Skip(1));
                 });
 
-            if (baseMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
+            if (baseMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(courierMethodName)}");
 
-            var subscribeMethod = baseMethod.MakeGenericMethod(methodGenericArguments[0].ParameterType);
+            var subscribeMethod = baseMethod.MakeGenericMethod(methodGenericArguments[0]);
 
             subscribeMethod.Invoke(courier, new object[] { handlerDelegate });
         }
 
         internal static Type CreateCourierHandlerType(this MethodInfo methodInfo)
         {
-            var parameters = methodInfo.GetParameters();
-            var notificationType = parameters[0].ParameterType;
+            var parameters = new List<Type>(methodInfo.GetParameters().Select(p => p.ParameterType));
+            if (methodInfo.ReturnType == typeof(Task)) parameters.Add(methodInfo.ReturnType);
+            var notificationType = parameters[0];
 
             Type handlerType;
-            switch (parameters.Length)
+            switch (parameters.Count)
             {
                 case 2:
                     handlerType = typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken));
@@ -67,7 +71,7 @@ namespace MediatR.Courier.Extensions
             return handlerType;
         }
 
-        public static bool SequenceEquivalent<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer = null)
+        private static bool SequenceEquivalent<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer = null)
         {
             var cnt = comparer is null
                 ? new Dictionary<T, int>()

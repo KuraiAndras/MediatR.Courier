@@ -34,6 +34,20 @@ namespace MediatR.Courier.Tests
         }
 
         [Fact]
+        public async Task MultipleSubscribedAsyncMethodsInvoked()
+        {
+            var mediatRCourier = new MediatRCourier();
+
+            var testClient = new TestInterfaceClientWithTwoAsyncMethods(mediatRCourier);
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+            await mediatRCourier.Handle(new TestNotification2(), CancellationToken.None).ConfigureAwait(false);
+
+            Assert.True(testClient.MessageReceived);
+            Assert.True(testClient.MessageReceived2);
+        }
+
+        [Fact]
         public async Task UnSubscribedMethodNotInvoked()
         {
             var mediatRCourier = new MediatRCourier();
@@ -53,6 +67,22 @@ namespace MediatR.Courier.Tests
             var mediatRCourier = new MediatRCourier();
 
             var testClient = new TestInterfaceClientWithTwoMethods(mediatRCourier);
+
+            testClient.Dispose();
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+            await mediatRCourier.Handle(new TestNotification2(), CancellationToken.None).ConfigureAwait(false);
+
+            Assert.False(testClient.MessageReceived);
+            Assert.False(testClient.MessageReceived2);
+        }
+
+        [Fact]
+        public async Task MultipleUnSubscribedAsyncMethodsNotInvoked()
+        {
+            var mediatRCourier = new MediatRCourier();
+
+            var testClient = new TestInterfaceClientWithTwoAsyncMethods(mediatRCourier);
 
             testClient.Dispose();
 
