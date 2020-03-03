@@ -1,41 +1,35 @@
-﻿using MediatR.Courier.Exceptions;
-using MediatR.Courier.Extensions;
+﻿using MediatR.Courier.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace MediatR.Courier
 {
     public abstract class CourierInterfaceClient : IDisposable
     {
         private readonly ICourier _courier;
-        private readonly ICollection<Delegate> _actions;
+        private readonly ICollection<Delegate> _handlers;
 
         protected CourierInterfaceClient(ICourier courier)
         {
             _courier = courier;
             var subType = GetType();
 
-            _actions = subType.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICourierNotificationHandler<>) && !(i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle)) is null))
-                .Select(i =>
-                {
-                    var notificationHandleMethodInfo = i.GetMethod(nameof(ICourierNotificationHandler<INotification>.Handle));
-                    if (notificationHandleMethodInfo is null) throw new MethodNotImplementedException($"Method Handle is not implemented from interface {nameof(INotificationHandler<INotification>)}");
+            _handlers = subType.GetInterfaces()
+                .Where(i =>
+                    i.IsGenericType
+                    && (i.GetGenericTypeDefinition() != typeof(ICourierNotificationHandler<>)
+                        || i.GetGenericTypeDefinition() != typeof(ICourierNotificationHandlerAsync<>)))
+                .SelectMany(i => i
+                    .GetMethods()
+                    .Select(methodInfo =>
+                    {
+                        var handler = Delegate.CreateDelegate(methodInfo.CreateCourierHandlerType(), this, methodInfo);
 
-                    var notificationType = i.GetGenericArguments()[0];
+                        _courier.InvokeCourierMethod(nameof(ICourier.Subscribe), handler.Method, handler);
 
-                    var genericActionType = typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken));
-
-                    var action = Delegate.CreateDelegate(genericActionType, this, notificationHandleMethodInfo);
-
-                    var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), true, notificationType);
-
-                    subscribeMethod.Invoke(_courier, new object[] { action });
-
-                    return action;
-                })
+                        return handler;
+                    }))
                 .ToList();
         }
 
@@ -43,16 +37,12 @@ namespace MediatR.Courier
         {
             if (!disposing) return;
 
-            foreach (var @delegate in _actions)
+            foreach (var handler in _handlers)
             {
-                var notificationType = @delegate.GetType().GetGenericArguments()[0];
-
-                var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), true, notificationType);
-
-                unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
+                _courier.InvokeCourierMethod(nameof(ICourier.UnSubscribe), handler.Method, handler);
             }
 
-            _actions.Clear();
+            _handlers.Clear();
         }
 
         public void Dispose()

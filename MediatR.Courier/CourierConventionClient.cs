@@ -39,9 +39,9 @@ namespace MediatR.Courier
 
                     var @delegate = Delegate.CreateDelegate(actionType, this, method);
 
-                    var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), hasCancellation, notificationType);
+                    //var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), hasCancellation, notificationType);
 
-                    subscribeMethod.Invoke(_courier, new object[] { @delegate });
+                    //subscribeMethod.Invoke(_courier, new object[] { @delegate });
 
                     return @delegate;
                 })
@@ -61,9 +61,9 @@ namespace MediatR.Courier
 
                 var hasCancellation = parameters.Length != 1;
 
-                var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), hasCancellation, notificationType);
+                //var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), hasCancellation, notificationType);
 
-                unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
+                //unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
             }
 
             _actions.Clear();

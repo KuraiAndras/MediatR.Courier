@@ -1,22 +1,28 @@
 ﻿using MediatR.Courier.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MediatR.Courier.Extensions
 {
     internal static class CourierExtensions
     {
-        internal static MethodInfo GetCourierMethod(this ICourier courier, string methodName, bool actionHasCancellation, Type notificationType)
+        internal static void InvokeCourierMethod(
+            this ICourier courier,
+            string courierMethodName,
+            MethodInfo handler,
+            Delegate handlerDelegate)
         {
-            var parameterGenericArgumentCount = actionHasCancellation ? 2 : 1;
+            var methodGenericArguments = handler.GetParameters();
 
-            var baseMethod = courier
-                .GetType()
+            var baseMethod = typeof(ICourier)
                 .GetMethods()
                 .SingleOrDefault(m =>
                 {
-                    if (m.Name != methodName) return false;
+                    if (m.Name != courierMethodName) return false;
 
                     var parameters = m.GetParameters();
 
@@ -24,14 +30,74 @@ namespace MediatR.Courier.Extensions
 
                     var parameter = parameters[0];
 
-                    if (!parameter.ParameterType.IsGenericType) return false;
-
-                    return parameter.ParameterType.GetGenericArguments().Length == parameterGenericArgumentCount;
+                    return parameter.ParameterType.IsGenericType
+                           && parameter
+                               .ParameterType
+                               .GetGenericArguments()
+                               .Skip(1)
+                               .SequenceEquivalent(methodGenericArguments
+                                   .Skip(1)
+                                   .Select(a => a.ParameterType));
                 });
 
             if (baseMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(ICourier.Subscribe)}");
 
-            return baseMethod.MakeGenericMethod(notificationType);
+            var subscribeMethod = baseMethod.MakeGenericMethod(methodGenericArguments[0].ParameterType);
+
+            subscribeMethod.Invoke(courier, new object[] { handlerDelegate });
+        }
+
+        internal static Type CreateCourierHandlerType(this MethodInfo methodInfo)
+        {
+            var parameters = methodInfo.GetParameters();
+            var notificationType = parameters[0].ParameterType;
+
+            Type handlerType;
+            switch (parameters.Length)
+            {
+                case 2:
+                    handlerType = typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken));
+                    break;
+                case 3:
+                    handlerType = typeof(Func<,,>).MakeGenericType(notificationType, typeof(CancellationToken), typeof(Task));
+                    break;
+                default: throw new UnknownMethodException(methodInfo.Name);
+            }
+
+            return handlerType;
+        }
+
+        public static bool SequenceEquivalent<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer = null)
+        {
+            var cnt = comparer is null
+                ? new Dictionary<T, int>()
+                : new Dictionary<T, int>(comparer);
+
+            foreach (var s in first)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]++;
+                }
+                else
+                {
+                    cnt.Add(s, 1);
+                }
+            }
+
+            foreach (var s in second)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]--;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return cnt.Values.All(c => c == 0);
         }
     }
 }
