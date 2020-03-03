@@ -2,6 +2,7 @@
 
 namespace MediatR.Courier.TestResources
 {
+#pragma warning disable IDE0060
     public sealed class TestConventionClientMixed : CourierConventionClient, ICarryNotifications
     {
         public TestConventionClientMixed(ICourier courier) : base(courier)
@@ -19,4 +20,5 @@ namespace MediatR.Courier.TestResources
         public void HandleOptional3(TestNotification _ = default, CancellationToken __ = default) => MessageReceivedCount++;
         public int HandleReturnsInt(TestNotification _) => MessageReceivedCount++;
     }
+#pragma warning restore IDE0060
 }

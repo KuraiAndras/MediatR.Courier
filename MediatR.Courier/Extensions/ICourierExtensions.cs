@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace MediatR.Courier.Extensions
 {
-    internal static class ICourierExtensions
+    internal static class CourierExtensions
     {
         internal static MethodInfo GetCourierMethod(this ICourier courier, string methodName, bool actionHasCancellation, Type notificationType)
         {

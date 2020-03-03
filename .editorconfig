@@ -17,3 +17,6 @@ dotnet_code_quality_unused_parameters = all:warning
 
 # S4136: Method overloads should be grouped together
 dotnet_diagnostic.S4136.severity = warning
+
+# S1854: Unused assignments should be removed
+dotnet_diagnostic.S1854.severity = none
