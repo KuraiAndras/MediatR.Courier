@@ -24,7 +24,7 @@ namespace MediatR.Courier.Tests
 
         [Theory]
         [ClassData(typeof(AsyncTestData))]
-        public async Task AsyncActionMightCompleteInTime(TimeSpan delayTime)
+        public async Task AsyncVoidActionMightCompleteInTime(TimeSpan delayTime)
         {
             var mediatRCourier = new MediatRCourier();
 
@@ -68,6 +68,27 @@ namespace MediatR.Courier.Tests
         }
 
         [Fact]
+        public async Task SubscribedAsyncActionInvoked()
+        {
+            var mediatRCourier = new MediatRCourier();
+
+            var receivedMessage = false;
+
+            async Task NotificationAction(TestNotification _, CancellationToken __)
+            {
+                receivedMessage = true;
+
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            }
+
+            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+            Assert.True(receivedMessage);
+        }
+
+        [Fact]
         public async Task UnSubscribedActionNotInvoked()
         {
             var mediatRCourier = new MediatRCourier();
@@ -75,6 +96,31 @@ namespace MediatR.Courier.Tests
             var receivedMessageCount = 0;
 
             void NotificationAction(TestNotification _, CancellationToken __) => ++receivedMessageCount;
+
+            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+            mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
+
+            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+            Assert.True(receivedMessageCount == 1);
+        }
+
+        [Fact]
+        public async Task UnSubscribedAsyncActionNotInvoked()
+        {
+            var mediatRCourier = new MediatRCourier();
+
+            var receivedMessageCount = 0;
+
+            async Task NotificationAction(TestNotification _, CancellationToken __)
+            {
+                ++receivedMessageCount;
+
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            }
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
