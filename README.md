@@ -171,12 +171,26 @@ public sealed class EventHandlerExample : CourierConventionClient
         public void Handle(TestNotification _, CancellationToken __, TestConventionClient1Cancellation ___) => MessageReceivedCount++;
         // Not Called
         public int HandleReturnsInt(TestNotification _) => MessageReceivedCount++;
+
+        // Called, Handlers which return Task are awaited
+        public async Task HandleAsync(TestNotification _)
+        {
+            await Task.Delay(100);
+            MessageReceivedCOunt++;
+        }
+
+        // Called, Handlers which return Task are awaited
+        public Task HandleAsync(TestNotification _, CancellationToken __)
+        {
+            await Task.Delay(100);
+            MessageReceivedCOunt++;
+        }
     }
 ```
 ## Gotchas
 
 * No ordering is guaranteed when calling the subscribed methods
-* Async methods are not awaited.
+* Async void methods are not awaited.
 
 ## Usage
 
