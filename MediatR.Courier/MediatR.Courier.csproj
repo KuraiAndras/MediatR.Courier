@@ -5,7 +5,7 @@
     <LangVersion>7.3</LangVersion>
     <IsPackable>true</IsPackable>
     <PackageId>MediatR.Courier</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Kurai András</Authors>
     <Description>
       A simple library to treat MediatR notifications sort of like events.
