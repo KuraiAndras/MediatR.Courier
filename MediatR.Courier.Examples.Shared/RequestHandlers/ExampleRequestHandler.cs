@@ -13,13 +13,13 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
         private readonly IMediator _mediator;
 
         private static int _callCount;
-        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
         public ExampleRequestHandler(IMediator mediator) => _mediator = mediator;
 
         protected override async Task Handle(IncrementCallCountCommand request, CancellationToken cancellationToken)
         {
-            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
 #pragma warning disable S2696 // Instance members should not write to "static" fields
             _callCount++;
@@ -27,16 +27,16 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
 
             await _mediator.Publish(new ExampleNotification(_callCount), cancellationToken).ConfigureAwait(false);
 
-            _semaphore.Release();
+            Semaphore.Release();
         }
 
         public async Task<int> Handle(NotificationCountQuery request, CancellationToken cancellationToken)
         {
-            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             var response = _callCount;
 
-            _semaphore.Release();
+            Semaphore.Release();
 
             return response;
         }
