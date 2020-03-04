@@ -20,3 +20,6 @@ dotnet_diagnostic.S4136.severity = warning
 
 # S1854: Unused assignments should be removed
 dotnet_diagnostic.S1854.severity = none
+
+# RCS1001: Add braces (when expression spans over multiple lines).
+dotnet_diagnostic.RCS1001.severity = warning

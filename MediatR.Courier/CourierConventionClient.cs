@@ -2,15 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace MediatR.Courier
 {
     public abstract class CourierConventionClient : IDisposable
     {
         private readonly ICourier _courier;
-        private readonly ICollection<Delegate> _actions;
+        private readonly ICollection<Delegate> _handlers;
 
         protected CourierConventionClient(ICourier courier)
         {
@@ -19,33 +18,26 @@ namespace MediatR.Courier
             var subType = GetType();
 
             var baseNotificationType = typeof(INotification);
-            var cancellationTokenType = typeof(CancellationToken);
 
-            _actions = subType.GetMethods()
+            _handlers = subType.GetMethods()
+                .Where(m =>
+                {
+                    if (m.ReturnType != typeof(void) && m.ReturnType != typeof(Task)) return false;
+
+                    var parameters = m.GetParameters();
+
+                    if (parameters.Length > 2 || parameters.Length == 0) return false;
+
+                    return baseNotificationType.IsAssignableFrom(parameters[0].ParameterType);
+                })
                 .Select(method =>
                 {
-                    if (method.ReturnParameter?.ParameterType != typeof(void)) return null;
+                    var handler = Delegate.CreateDelegate(method.CreateCourierHandlerType(), this, method);
 
-                    var parameters = method.GetParameters();
+                    _courier.InvokeCourierMethod(nameof(ICourier.Subscribe), method, handler);
 
-                    if (parameters.Length > 2 || parameters.Length == 0) return null;
-
-                    var notificationType = parameters[0].ParameterType;
-                    if (!baseNotificationType.IsAssignableFrom(notificationType)) return null;
-
-                    var (actionType, hasCancellation) = parameters.Length == 1
-                        ? (typeof(Action<>).MakeGenericType(notificationType), false)
-                        : (typeof(Action<,>).MakeGenericType(notificationType, cancellationTokenType), true);
-
-                    var @delegate = Delegate.CreateDelegate(actionType, this, method);
-
-                    //var subscribeMethod = _courier.GetCourierMethod(nameof(ICourier.Subscribe), hasCancellation, notificationType);
-
-                    //subscribeMethod.Invoke(_courier, new object[] { @delegate });
-
-                    return @delegate;
+                    return handler;
                 })
-                .Where(m => !(m is null))
                 .ToList();
         }
 
@@ -53,20 +45,12 @@ namespace MediatR.Courier
         {
             if (!disposing) return;
 
-            foreach (var @delegate in _actions)
+            foreach (var handler in _handlers)
             {
-                var parameters = @delegate.GetMethodInfo().GetParameters();
-
-                var notificationType = parameters[0].ParameterType;
-
-                var hasCancellation = parameters.Length != 1;
-
-                //var unSubscribeMethod = _courier.GetCourierMethod(nameof(ICourier.UnSubscribe), hasCancellation, notificationType);
-
-                //unSubscribeMethod.Invoke(_courier, new object[] { @delegate });
+                _courier.InvokeCourierMethod(nameof(ICourier.UnSubscribe), handler.Method, handler);
             }
 
-            _actions.Clear();
+            _handlers.Clear();
         }
 
         public void Dispose()

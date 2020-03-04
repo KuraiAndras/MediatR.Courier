@@ -59,6 +59,9 @@ namespace MediatR.Courier.Extensions
             Type handlerType;
             switch (parameters.Count)
             {
+                case 1:
+                    handlerType = typeof(Action<>).MakeGenericType(notificationType);
+                    break;
                 case 2:
                     handlerType = typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken));
                     break;
