@@ -1,4 +1,4 @@
-using MediatR.Courier.TestResources;
+﻿using MediatR.Courier.TestResources;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -78,7 +78,7 @@ namespace MediatR.Courier.Tests
             {
                 receivedMessage = true;
 
-                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
             }
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);
@@ -119,7 +119,7 @@ namespace MediatR.Courier.Tests
             {
                 ++receivedMessageCount;
 
-                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
             }
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);

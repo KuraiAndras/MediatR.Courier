@@ -13,7 +13,7 @@ namespace MediatR.Courier.TestResources
 
         public async Task HandleAsync(TestNotification _)
         {
-            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
 
             MessageReceivedCount++;
         }

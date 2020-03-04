@@ -17,7 +17,7 @@ namespace MediatR.Courier.TestResources
 
         public async Task HandleAsync(TestNotification _, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
 
             MessageReceivedCount++;
         }
