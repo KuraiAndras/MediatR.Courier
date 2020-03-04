@@ -8,12 +8,12 @@ namespace MediatR.Courier.Examples.Wpf.Core.DependencyInjection
 {
     public static class CompositionRoot
     {
-        private static readonly IServiceProvider _serviceProvider = new ServiceCollection()
+        private static readonly IServiceProvider ServiceProvider = new ServiceCollection()
             .AddMediatR(AppDomain.CurrentDomain.GetAssemblies())
             .AddCourier(typeof(SharedMarkerType).Assembly)
             .AddTransient<IExampleViewModel, ExampleViewModel>()
             .BuildServiceProvider();
 
-        public static T Resolve<T>() => _serviceProvider.GetService<T>();
+        public static T Resolve<T>() => ServiceProvider.GetService<T>();
     }
 }
