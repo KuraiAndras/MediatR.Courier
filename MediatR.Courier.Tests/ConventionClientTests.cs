@@ -21,6 +21,7 @@ namespace MediatR.Courier.Tests
                 yield return new object[] { typeof(TestConventionClient1NoCancellation) };
                 yield return new object[] { typeof(TestConventionClient1Cancellation) };
                 yield return new object[] { typeof(TestInterfaceClient1Cancellation) };
+                yield return new object[] { typeof(TestInterfaceClientWithTwoAsyncMethods) };
                 yield return new object[] { typeof(TestConventionClientMixed) };
             }
 
@@ -33,7 +34,7 @@ namespace MediatR.Courier.Tests
         {
             var client = (ICarryNotifications)Activator.CreateInstance(clientType, _courier);
 
-            await InvokeAsync().ConfigureAwait(false);
+            await InvokeNotificationsAsync().ConfigureAwait(false);
 
             Assert.True(client.MessageReceivedCount == client.ProperlyImplementedHandleCount);
         }
@@ -44,11 +45,11 @@ namespace MediatR.Courier.Tests
         {
             var client = (ICarryNotifications)Activator.CreateInstance(clientType, _courier);
 
-            await InvokeAsync().ConfigureAwait(false);
+            await InvokeNotificationsAsync().ConfigureAwait(false);
 
             ((IDisposable)client).Dispose();
 
-            await InvokeAsync().ConfigureAwait(false);
+            await InvokeNotificationsAsync().ConfigureAwait(false);
 
             Assert.True(client.MessageReceivedCount == client.ProperlyImplementedHandleCount);
         }
@@ -58,9 +59,9 @@ namespace MediatR.Courier.Tests
         {
             var testClient = new TestConventionClient1NoCancellation(_courier);
 
-            await InvokeAsync().ConfigureAwait(false);
+            await InvokeNotificationsAsync().ConfigureAwait(false);
 
-            Assert.True(testClient.MessageReceivedCount == 1);
+            Assert.True(testClient.MessageReceivedCount == testClient.ProperlyImplementedHandleCount);
         }
 
         [Fact]
@@ -68,15 +69,19 @@ namespace MediatR.Courier.Tests
         {
             var testClient = new TestConventionClient1NoCancellation(_courier);
 
-            await InvokeAsync().ConfigureAwait(false);
+            await InvokeNotificationsAsync().ConfigureAwait(false);
 
             testClient.Dispose();
 
-            await InvokeAsync().ConfigureAwait(false);
+            await InvokeNotificationsAsync().ConfigureAwait(false);
 
-            Assert.True(testClient.MessageReceivedCount == 1);
+            Assert.True(testClient.MessageReceivedCount == testClient.ProperlyImplementedHandleCount);
         }
 
-        private async Task InvokeAsync() => await _courier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        private async Task InvokeNotificationsAsync()
+        {
+            await _courier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+            await _courier.Handle(new TestNotification2(), CancellationToken.None).ConfigureAwait(false);
+        }
     }
 }

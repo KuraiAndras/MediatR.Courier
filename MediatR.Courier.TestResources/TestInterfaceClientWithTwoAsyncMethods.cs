@@ -22,7 +22,7 @@ namespace MediatR.Courier.TestResources
             MessageReceived = true;
             MessageReceivedCount++;
 
-            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
         }
 
         public async Task HandleAsync(TestNotification2 notification, CancellationToken cancellationToken = default)
@@ -30,7 +30,7 @@ namespace MediatR.Courier.TestResources
             MessageReceived2 = true;
             MessageReceivedCount++;
 
-            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
         }
 
         public int MessageReceivedCount { get; private set; }
