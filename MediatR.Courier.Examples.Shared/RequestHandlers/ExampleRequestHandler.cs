@@ -10,12 +10,23 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
     /// </summary>
     public sealed class ExampleRequestHandler : AsyncRequestHandler<IncrementCallCountCommand>, IRequestHandler<NotificationCountQuery, int>
     {
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+        private static int _callCount;
+
         private readonly IMediator _mediator;
 
-        private static int _callCount;
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-
         public ExampleRequestHandler(IMediator mediator) => _mediator = mediator;
+
+        public async Task<int> Handle(NotificationCountQuery request, CancellationToken cancellationToken)
+        {
+            await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            var response = _callCount;
+
+            Semaphore.Release();
+
+            return response;
+        }
 
         protected override async Task Handle(IncrementCallCountCommand request, CancellationToken cancellationToken)
         {
@@ -28,17 +39,6 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
             await _mediator.Publish(new ExampleNotification(_callCount), cancellationToken).ConfigureAwait(false);
 
             Semaphore.Release();
-        }
-
-        public async Task<int> Handle(NotificationCountQuery request, CancellationToken cancellationToken)
-        {
-            await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-            var response = _callCount;
-
-            Semaphore.Release();
-
-            return response;
         }
     }
 }

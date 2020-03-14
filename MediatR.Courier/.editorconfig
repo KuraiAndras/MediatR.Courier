@@ -1,4 +1,0 @@
-[*.cs]
-
-# RCS1179: Use return instead of assignment.
-dotnet_diagnostic.RCS1179.severity = none
