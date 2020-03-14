@@ -9,6 +9,7 @@
         }
 
         protected IMediator Mediator { get; }
+
         protected ICourier Courier { get; }
     }
 }

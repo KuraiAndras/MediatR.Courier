@@ -14,20 +14,6 @@ namespace MediatR.Courier.Tests
 
         public ConventionClientTests() => _courier = new MediatRCourier();
 
-        private sealed class ClientTypeTestData : IEnumerable<object[]>
-        {
-            public IEnumerator<object[]> GetEnumerator()
-            {
-                yield return new object[] { typeof(TestConventionClient1NoCancellation) };
-                yield return new object[] { typeof(TestConventionClient1Cancellation) };
-                yield return new object[] { typeof(TestInterfaceClient1Cancellation) };
-                yield return new object[] { typeof(TestInterfaceClientWithTwoAsyncMethods) };
-                yield return new object[] { typeof(TestConventionClientMixed) };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
         [Theory]
         [ClassData(typeof(ClientTypeTestData))]
         public async Task ClientHandlersAreInvoked(Type clientType)
@@ -82,6 +68,20 @@ namespace MediatR.Courier.Tests
         {
             await _courier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
             await _courier.Handle(new TestNotification2(), CancellationToken.None).ConfigureAwait(false);
+        }
+
+        private sealed class ClientTypeTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { typeof(TestConventionClient1NoCancellation) };
+                yield return new object[] { typeof(TestConventionClient1Cancellation) };
+                yield return new object[] { typeof(TestInterfaceClient1Cancellation) };
+                yield return new object[] { typeof(TestInterfaceClientWithTwoAsyncMethods) };
+                yield return new object[] { typeof(TestConventionClientMixed) };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR.Courier.Examples.Shared.Notifications;
 using MediatR.Courier.Examples.Shared.Requests;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -12,16 +13,15 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
     {
         private int _notificationCount;
 
-        public ExampleViewModel(
-            IMediator mediator,
-            ICourier courier)
-            : base(mediator, courier) =>
+        public ExampleViewModel(IMediator mediator, ICourier courier)
+            : base(mediator, courier)
+        {
+            if (Courier is null) throw new ArgumentNullException(nameof(courier));
+
             Courier.Subscribe<ExampleNotification>(ExampleNotificationFired);
+        }
 
-        private void ExampleNotificationFired(ExampleNotification notification, CancellationToken _) => NotificationCount = notification.NotificationCount;
-
-        public async Task InitializeAsync() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
-        public async Task IncrementNotificationCountAsync() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public int NotificationCount
         {
@@ -29,7 +29,11 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
             private set => SetAndNotifyPropertyChanged(ref _notificationCount, value);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public async Task InitializeAsync() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
+
+        public async Task IncrementNotificationCountAsync() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
+
+        public void Dispose() => Courier.UnSubscribe<ExampleNotification>(ExampleNotificationFired);
 
         private void SetAndNotifyPropertyChanged<T>(ref T backingField, T value, [CallerMemberName] string propertyName = default)
         {
@@ -40,6 +44,6 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
             Application.Current.Dispatcher?.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
-        public void Dispose() => Courier.UnSubscribe<ExampleNotification>(ExampleNotificationFired);
+        private void ExampleNotificationFired(ExampleNotification notification, CancellationToken _) => NotificationCount = notification.NotificationCount;
     }
 }

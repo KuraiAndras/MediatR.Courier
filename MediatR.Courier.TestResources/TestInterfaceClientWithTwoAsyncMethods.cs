@@ -10,12 +10,18 @@ namespace MediatR.Courier.TestResources
         ICourierNotificationHandlerAsync<TestNotification2>,
         ICarryNotifications
     {
-        public bool MessageReceived { get; private set; }
-        public bool MessageReceived2 { get; private set; }
-
-        public TestInterfaceClientWithTwoAsyncMethods(ICourier courier) : base(courier)
+        public TestInterfaceClientWithTwoAsyncMethods(ICourier courier)
+            : base(courier)
         {
         }
+
+        public bool MessageReceived { get; private set; }
+
+        public bool MessageReceived2 { get; private set; }
+
+        public int MessageReceivedCount { get; private set; }
+
+        public int ProperlyImplementedHandleCount => 2;
 
         public async Task HandleAsync(TestNotification notification, CancellationToken cancellationToken = default)
         {
@@ -32,8 +38,5 @@ namespace MediatR.Courier.TestResources
 
             await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
         }
-
-        public int MessageReceivedCount { get; private set; }
-        public int ProperlyImplementedHandleCount => 2;
     }
 }
