@@ -10,15 +10,18 @@ namespace MediatR.Courier.Exceptions
         {
         }
 
-        public MethodNotImplementedException(string message) : base(message)
+        public MethodNotImplementedException(string message)
+            : base(message)
         {
         }
 
-        public MethodNotImplementedException(string message, Exception innerException) : base(message, innerException)
+        public MethodNotImplementedException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
-        protected MethodNotImplementedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected MethodNotImplementedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

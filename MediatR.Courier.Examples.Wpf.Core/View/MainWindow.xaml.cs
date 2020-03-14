@@ -19,10 +19,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
         private void OpenWindowClicked(object sender, RoutedEventArgs e)
         {
             var mainControl = new MainControl();
-            var window = new Window
-            {
-                Content = mainControl
-            };
+            var window = new Window { Content = mainControl };
 
             window.Closed += (o, args) => mainControl.Dispose();
             window.Show();

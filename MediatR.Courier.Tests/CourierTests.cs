@@ -10,18 +10,6 @@ namespace MediatR.Courier.Tests
 {
     public sealed class CourierTests
     {
-        private sealed class AsyncTestData : IEnumerable<object[]>
-        {
-            public IEnumerator<object[]> GetEnumerator()
-            {
-                yield return new object[] { new TimeSpan(0L) };
-                yield return new object[] { new TimeSpan(0, 0, 0, 0, 1) };
-                yield return new object[] { new TimeSpan(0, 0, 0, 0, 10) };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
         [Theory]
         [ClassData(typeof(AsyncTestData))]
         public async Task AsyncVoidActionMightCompleteInTime(TimeSpan delayTime)
@@ -131,6 +119,18 @@ namespace MediatR.Courier.Tests
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
             Assert.True(receivedMessageCount == 1);
+        }
+
+        private sealed class AsyncTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { new TimeSpan(0L) };
+                yield return new object[] { new TimeSpan(0, 0, 0, 0, 1) };
+                yield return new object[] { new TimeSpan(0, 0, 0, 0, 10) };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
     }
 }

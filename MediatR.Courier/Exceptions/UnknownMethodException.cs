@@ -10,15 +10,18 @@ namespace MediatR.Courier.Exceptions
         {
         }
 
-        public UnknownMethodException(string message) : base(message)
+        public UnknownMethodException(string message)
+            : base(message)
         {
         }
 
-        public UnknownMethodException(string message, Exception innerException) : base(message, innerException)
+        public UnknownMethodException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
-        protected UnknownMethodException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected UnknownMethodException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

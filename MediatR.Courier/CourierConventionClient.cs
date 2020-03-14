@@ -41,6 +41,12 @@ namespace MediatR.Courier
                 .ToList();
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
@@ -51,12 +57,6 @@ namespace MediatR.Courier
             }
 
             _handlers.Clear();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

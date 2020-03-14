@@ -1,4 +1,4 @@
-using MediatR.Courier.TestResources;
+﻿using MediatR.Courier.TestResources;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
@@ -9,20 +9,6 @@ namespace MediatR.Courier.DependencyInjection.Tests
 {
     public class DependencyInjectionTests
     {
-        private static (IServiceProvider serviceProvider, IMediator mediator, ICourier courier) SetUpCourier()
-        {
-            var services = new ServiceCollection()
-                .AddMediatR(typeof(TestResourcesMarkerType))
-                .AddCourier(typeof(TestResourcesMarkerType).Assembly);
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var mediator = serviceProvider.GetService<IMediator>();
-            var courier = serviceProvider.GetService<ICourier>();
-
-            return (serviceProvider, mediator, courier);
-        }
-
         [Fact]
         public void NotificationHandlerIsRegistered()
         {
@@ -60,6 +46,20 @@ namespace MediatR.Courier.DependencyInjection.Tests
             await mediator.Publish(new TestNotification()).ConfigureAwait(false);
 
             Assert.True(receivedMessage);
+        }
+
+        private static (IServiceProvider serviceProvider, IMediator mediator, ICourier courier) SetUpCourier()
+        {
+            var services = new ServiceCollection()
+                .AddMediatR(typeof(TestResourcesMarkerType))
+                .AddCourier(typeof(TestResourcesMarkerType).Assembly);
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var mediator = serviceProvider.GetService<IMediator>();
+            var courier = serviceProvider.GetService<ICourier>();
+
+            return (serviceProvider, mediator, courier);
         }
     }
 }
