@@ -21,7 +21,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
             Courier.Subscribe<ExampleNotification>(ExampleNotificationFired);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public int NotificationCount
         {
@@ -35,9 +35,9 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
 
         public void Dispose() => Courier.UnSubscribe<ExampleNotification>(ExampleNotificationFired);
 
-        private void SetAndNotifyPropertyChanged<T>(ref T backingField, T value, [CallerMemberName] string propertyName = default)
+        private void SetAndNotifyPropertyChanged<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = default)
         {
-            if (backingField.Equals(value)) return;
+            if (backingField?.Equals(value) == true) return;
 
             backingField = value;
 

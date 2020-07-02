@@ -56,28 +56,21 @@ namespace MediatR.Courier.Extensions
             if (methodInfo.ReturnType == typeof(Task)) parameters.Add(methodInfo.ReturnType);
             var notificationType = parameters[0];
 
-            Type handlerType;
-            switch (parameters.Count)
+            return parameters.Count switch
             {
-                case 1:
-                    handlerType = typeof(Action<>).MakeGenericType(notificationType);
-                    break;
-                case 2 when parameters[1] == typeof(Task):
-                    handlerType = typeof(Func<,>).MakeGenericType(notificationType, typeof(Task));
-                    break;
-                case 2:
-                    handlerType = typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken));
-                    break;
-                case 3:
-                    handlerType = typeof(Func<,,>).MakeGenericType(notificationType, typeof(CancellationToken), typeof(Task));
-                    break;
-                default: throw new UnknownMethodException(methodInfo.Name);
-            }
+                1 => typeof(Action<>).MakeGenericType(notificationType),
 
-            return handlerType;
+                2 when parameters[1] == typeof(Task) => typeof(Func<,>).MakeGenericType(notificationType, typeof(Task)),
+
+                2 => typeof(Action<,>).MakeGenericType(notificationType, typeof(CancellationToken)),
+
+                3 => typeof(Func<,,>).MakeGenericType(notificationType, typeof(CancellationToken), typeof(Task)),
+
+                _ => throw new UnknownMethodException(methodInfo.Name),
+            };
         }
 
-        private static bool SequenceEquivalent<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer = null)
+        private static bool SequenceEquivalent<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T>? comparer = null)
         {
             var cnt = comparer is null
                 ? new Dictionary<T, int>()
