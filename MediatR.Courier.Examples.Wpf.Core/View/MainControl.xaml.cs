@@ -1,10 +1,9 @@
-﻿using MediatR.Courier.Examples.Wpf.Core.ViewModels;
-using System;
+﻿using System;
 using System.Windows;
 
 namespace MediatR.Courier.Examples.Wpf.Core.View
 {
-    public sealed partial class MainControl : ViewModelUserControlBase<IExampleViewModel>, IDisposable
+    public sealed partial class MainControl : IDisposable
     {
         public MainControl() => InitializeComponent();
 

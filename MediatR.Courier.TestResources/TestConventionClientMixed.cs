@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace MediatR.Courier.TestResources
 {
+#pragma warning disable IDE0060 // Remove unused parameter
     public sealed class TestConventionClientMixed : CourierConventionClient, ICarryNotifications
     {
         public TestConventionClientMixed(ICourier courier)
@@ -21,11 +22,11 @@ namespace MediatR.Courier.TestResources
 
         public void Handle(TestNotification _, CancellationToken __, TestConventionClient1Cancellation ___) => MessageReceivedCount++;
 
-        public void HandleOptional(TestNotification _ = default) => MessageReceivedCount++;
+        public void HandleOptional(TestNotification? _ = default) => MessageReceivedCount++;
 
         public void HandleOptional2(TestNotification _, CancellationToken __ = default) => MessageReceivedCount++;
 
-        public void HandleOptional3(TestNotification _ = default, CancellationToken __ = default) => MessageReceivedCount++;
+        public void HandleOptional3(TestNotification? _ = default, CancellationToken __ = default) => MessageReceivedCount++;
 
         public int HandleReturnsInt(TestNotification _) => MessageReceivedCount++;
 
@@ -41,4 +42,5 @@ namespace MediatR.Courier.TestResources
             MessageReceivedCount++;
         }
     }
+#pragma warning restore IDE0060 // Remove unused parameter
 }
