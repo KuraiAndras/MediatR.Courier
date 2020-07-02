@@ -18,9 +18,9 @@ namespace MediatR.Courier.Tests
 
             var receivedMessage = false;
 
-            async void NotificationAction(TestNotification _, CancellationToken __)
+            async void NotificationAction(TestNotification _, CancellationToken cancellationToken)
             {
-                await Task.Delay(delayTime).ConfigureAwait(false);
+                await Task.Delay(delayTime, cancellationToken).ConfigureAwait(false);
 
                 receivedMessage = true;
             }
@@ -62,11 +62,11 @@ namespace MediatR.Courier.Tests
 
             var receivedMessage = false;
 
-            async Task NotificationAction(TestNotification _, CancellationToken __)
+            async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
             {
                 receivedMessage = true;
 
-                await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
             }
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);
@@ -103,11 +103,11 @@ namespace MediatR.Courier.Tests
 
             var receivedMessageCount = 0;
 
-            async Task NotificationAction(TestNotification _, CancellationToken __)
+            async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
             {
                 ++receivedMessageCount;
 
-                await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
             }
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);

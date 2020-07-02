@@ -14,11 +14,12 @@ namespace MediatR.Courier.Tests
 
         public ConventionClientTests() => _courier = new MediatRCourier();
 
+#pragma warning disable SA1009 // Closing parenthesis should be spaced correctly
         [Theory]
         [ClassData(typeof(ClientTypeTestData))]
         public async Task ClientHandlersAreInvoked(Type clientType)
         {
-            var client = (ICarryNotifications)Activator.CreateInstance(clientType, _courier);
+            var client = (ICarryNotifications)Activator.CreateInstance(clientType, _courier)!;
 
             await InvokeNotificationsAsync().ConfigureAwait(false);
 
@@ -29,7 +30,7 @@ namespace MediatR.Courier.Tests
         [ClassData(typeof(ClientTypeTestData))]
         public async Task ClientHandlersAreNotInvokedAfterDisposeInvoked(Type clientType)
         {
-            var client = (ICarryNotifications)Activator.CreateInstance(clientType, _courier);
+            var client = (ICarryNotifications)Activator.CreateInstance(clientType, _courier)!;
 
             await InvokeNotificationsAsync().ConfigureAwait(false);
 
@@ -39,6 +40,7 @@ namespace MediatR.Courier.Tests
 
             Assert.True(client.MessageReceivedCount == client.ProperlyImplementedHandleCount);
         }
+#pragma warning restore SA1009 // Closing parenthesis should be spaced correctly
 
         [Fact]
         public async Task ConventionClientMethodInvoked()
