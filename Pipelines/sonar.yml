@@ -10,7 +10,7 @@ variables:
 
 steps:
 
-- task: SonarCloudPrepare@4
+- task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
   displayName: 'Prepare analysis on SonarCloud'
   inputs:
     SonarCloud: 'SonarCloudCourier'
@@ -45,10 +45,10 @@ steps:
     summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
     reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
 
-- task: SonarCloudAnalyze@4
+- task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
   displayName: 'Run Code Analysis'
   continueOnError: false
 
-- task: SonarCloudPublish@4
+- task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
   displayName: 'Publish Quality Gate Result'
   continueOnError: false
