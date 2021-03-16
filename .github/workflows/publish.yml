@@ -16,6 +16,11 @@ jobs:
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v1.7.2
 
+      - name: Setup Tools .NET SDK
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '3.1.x'
+
       - name: Publish
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
