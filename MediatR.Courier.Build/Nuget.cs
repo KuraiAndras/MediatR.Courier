@@ -16,6 +16,7 @@ sealed partial class Build
         .Executes(() =>
             DotNetPack(s => s
                 .SetProject(Solution)
+                .SetConfiguration(Configuration)
                 .SetNoBuild(true)
                 .SetNoRestore(true)
                 .SetVersion(NugetVersion)));
