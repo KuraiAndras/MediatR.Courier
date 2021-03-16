@@ -1,10 +1,13 @@
-﻿using Nuke.Common;
+﻿using System;
+using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using System.Linq;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [CheckBuildProjectConfigurations]
@@ -17,7 +20,15 @@ partial class Build : NukeBuild
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution] readonly Solution Solution;
-    [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
+    [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion? GitVersion;
+    [PathExecutable] readonly Tool Git;
+
+    string TagVersion => Git.Invoke("describe --tags").First().Text ?? throw new InvalidOperationException("Cloud not get version from git");
+
+    string NugetVersion => GitVersion?.NuGetVersionV2 ?? TagVersion;
+    string AssemblyVersion => GitVersion?.AssemblySemVer ?? TagVersion;
+    string AssemblyFileVersion => GitVersion?.AssemblySemFileVer ?? TagVersion;
+    string InformationalVersion => GitVersion?.InformationalVersion ?? TagVersion;
 
     Target Clean => _ => _
         .Before(Restore)
@@ -34,9 +45,9 @@ partial class Build : NukeBuild
         .Executes(() => DotNetBuild(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
-            .SetAssemblyVersion(GitVersion.AssemblySemVer)
-            .SetFileVersion(GitVersion.AssemblySemFileVer)
-            .SetInformationalVersion(GitVersion.InformationalVersion)
+            .SetAssemblyVersion(AssemblyVersion)
+            .SetFileVersion(AssemblyFileVersion)
+            .SetInformationalVersion(InformationalVersion)
             .EnableNoRestore()));
 
     Target Test => _ => _

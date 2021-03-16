@@ -18,7 +18,7 @@ sealed partial class Build
                 .SetProject(Solution)
                 .SetNoBuild(true)
                 .SetNoRestore(true)
-                .SetVersion(GitVersion.NuGetVersionV2)));
+                .SetVersion(NugetVersion)));
 
     Target PushToNuGet => _ => _
         .DependsOn(Pack)
