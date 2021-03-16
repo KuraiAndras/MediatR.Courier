@@ -23,19 +23,20 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
-        .Executes(() =>
-        {
-            DotNetRestore(s => s
-                .SetProjectFile(Solution));
-        });
+        .Executes(() => DotNetRestore(s => s
+            .SetProjectFile(Solution)));
 
     Target Compile => _ => _
         .DependsOn(Restore)
-        .Executes(() =>
-        {
-            DotNetBuild(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore());
-        });
+        .Executes(() => DotNetBuild(s => s
+            .SetProjectFile(Solution)
+            .SetConfiguration(Configuration)
+            .EnableNoRestore()));
+
+    Target Test => _ => _
+        .DependsOn(Compile)
+        .Executes(() => DotNetTest(s => s
+            .SetProjectFile(Solution)
+            .SetConfiguration(Configuration)
+            .EnableNoBuild()));
 }
