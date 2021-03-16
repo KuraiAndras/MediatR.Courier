@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <Authors>Kurai András</Authors>
-    <RepositoryUrl>https://dev.azure.com/kandras9642/MediatR.Courier</RepositoryUrl>
+    <RepositoryUrl>https://github.com/KuraiAndras/MediatR.Courier</RepositoryUrl>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 
