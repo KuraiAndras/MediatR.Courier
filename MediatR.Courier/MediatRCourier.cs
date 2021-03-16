@@ -8,7 +8,7 @@ namespace MediatR.Courier
 {
     public sealed class MediatRCourier : ICourier, INotificationHandler<INotification>
     {
-        private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new ConcurrentDictionary<Type, ConcurrentBag<(Delegate, bool)>>();
+        private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new();
 
         public Task Handle(INotification notification, CancellationToken cancellationToken)
         {
