@@ -2,6 +2,7 @@
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -43,5 +44,8 @@ partial class Build : NukeBuild
         .Executes(() => DotNetTest(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
+            .SetCollectCoverage(true)
+            .SetCoverletOutputFormat(CoverletOutputFormat.opencover)
+            .EnableNoRestore()
             .EnableNoBuild()));
 }
