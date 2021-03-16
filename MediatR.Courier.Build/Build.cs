@@ -3,11 +3,12 @@ using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.GitVersion;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
-class Build : NukeBuild
+partial class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Compile);
 
@@ -15,6 +16,7 @@ class Build : NukeBuild
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution] readonly Solution Solution;
+    [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
 
     Target Clean => _ => _
         .Before(Restore)
@@ -31,6 +33,9 @@ class Build : NukeBuild
         .Executes(() => DotNetBuild(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
+            .SetAssemblyVersion(GitVersion.AssemblySemVer)
+            .SetFileVersion(GitVersion.AssemblySemFileVer)
+            .SetInformationalVersion(GitVersion.InformationalVersion)
             .EnableNoRestore()));
 
     Target Test => _ => _

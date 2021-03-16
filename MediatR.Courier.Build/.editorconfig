@@ -32,3 +32,6 @@ dotnet_diagnostic.IDE0051.severity = none
 
 # RCS1213: Remove unused member declaration.
 dotnet_diagnostic.RCS1213.severity = none
+
+# S1075: URIs should not be hardcoded
+dotnet_diagnostic.S1075.severity = none
