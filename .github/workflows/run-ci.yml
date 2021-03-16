@@ -1,0 +1,30 @@
+name: Run CI
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  RunCI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK for Sonar
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+
+      - name: Run CI
+        shell: pwsh
+        env:
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+        run: ./build.ps1 RunCi --configuration Release --sonar-host-url "https://sonarcloud.io" --sonar-project-key "KuraiAndras_MediatR.Courier" --sonar-token "${{ secrets.SONAR_TOKEN }}" --sonar-organization "kuraiandras"

@@ -8,7 +8,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
         {
             InitializeComponent();
 
-            Closed += (o, args) =>
+            Closed += (_, _) =>
             {
                 MainControl0.Dispose();
                 MainControl1.Dispose();
@@ -21,7 +21,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
             var mainControl = new MainControl();
             var window = new Window { Content = mainControl };
 
-            window.Closed += (o, args) => mainControl.Dispose();
+            window.Closed += (_, _) => mainControl.Dispose();
             window.Show();
         }
     }

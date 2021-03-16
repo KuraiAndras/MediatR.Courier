@@ -1,0 +1,37 @@
+root = true
+
+[*.cs]
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
+dotnet_style_require_accessibility_modifiers = never:warning
+
+csharp_style_expression_bodied_methods = true:silent
+csharp_style_expression_bodied_properties = true:warning
+csharp_style_expression_bodied_indexers = true:warning
+csharp_style_expression_bodied_accessors = true:warning
+
+# S3903: Types should be defined in named namespaces
+dotnet_diagnostic.S3903.severity = none
+
+# RCS1018: Add accessibility modifiers (or vice versa).
+dotnet_diagnostic.RCS1018.severity = none
+
+# RCS1110: Declare type inside namespace.
+dotnet_diagnostic.RCS1110.severity = none
+
+# CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+dotnet_diagnostic.CS8618.severity = none
+
+# S1144: Unused private types or members should be removed
+dotnet_diagnostic.S1144.severity = none
+
+# IDE0051: Remove unused private members
+dotnet_diagnostic.IDE0051.severity = none
+
+# RCS1213: Remove unused member declaration.
+dotnet_diagnostic.RCS1213.severity = none
+
+# S1075: URIs should not be hardcoded
+dotnet_diagnostic.S1075.severity = none
