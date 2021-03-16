@@ -1,5 +1,4 @@
-﻿using System;
-using Nuke.Common;
+﻿using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.ProjectModel;
@@ -7,6 +6,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using System;
 using System.Linq;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -18,6 +18,8 @@ partial class Build : NukeBuild
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
+    [Parameter] readonly bool CiBuild;
 
     [Solution] readonly Solution Solution;
     [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion? GitVersion;
@@ -45,6 +47,7 @@ partial class Build : NukeBuild
         .Executes(() => DotNetBuild(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
+            .SetContinuousIntegrationBuild(CiBuild)
             .SetAssemblyVersion(AssemblyVersion)
             .SetFileVersion(AssemblyFileVersion)
             .SetInformationalVersion(InformationalVersion)
