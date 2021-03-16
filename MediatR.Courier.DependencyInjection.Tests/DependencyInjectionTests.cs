@@ -56,8 +56,8 @@ namespace MediatR.Courier.DependencyInjection.Tests
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var mediator = serviceProvider.GetService<IMediator>();
-            var courier = serviceProvider.GetService<ICourier>();
+            var mediator = serviceProvider.GetRequiredService<IMediator>();
+            var courier = serviceProvider.GetRequiredService<ICourier>();
 
             return (serviceProvider, mediator, courier);
         }

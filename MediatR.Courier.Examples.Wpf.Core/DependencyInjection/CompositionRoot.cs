@@ -14,6 +14,6 @@ namespace MediatR.Courier.Examples.Wpf.Core.DependencyInjection
             .AddTransient<IExampleViewModel, ExampleViewModel>()
             .BuildServiceProvider();
 
-        public static T Resolve<T>() => ServiceProvider.GetService<T>();
+        public static T? Resolve<T>() => ServiceProvider.GetService<T>();
     }
 }

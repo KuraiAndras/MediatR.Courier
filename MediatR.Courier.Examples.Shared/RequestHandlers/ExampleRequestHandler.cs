@@ -10,7 +10,7 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
     /// </summary>
     public sealed class ExampleRequestHandler : AsyncRequestHandler<IncrementCallCountCommand>, IRequestHandler<NotificationCountQuery, int>
     {
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim Semaphore = new(1, 1);
         private static int _callCount;
 
         private readonly IMediator _mediator;

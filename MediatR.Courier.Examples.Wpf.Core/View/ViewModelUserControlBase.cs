@@ -7,7 +7,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
     {
         protected ViewModelUserControlBase()
         {
-            ViewModel = CompositionRoot.Resolve<TViewModel>();
+            ViewModel = CompositionRoot.Resolve<TViewModel>()!;
             DataContext = ViewModel;
         }
 
