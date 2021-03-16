@@ -32,7 +32,7 @@ sealed partial class Build
             .SetFramework("net5.0")
             .SetLogin(SonarToken)));
 
-    Target RunSonar => _ => _
+    Target RunCi => _ => _
         .DependsOn(SonarEnd)
         .Executes(() =>
         {
