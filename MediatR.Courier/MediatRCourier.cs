@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
@@ -29,7 +29,7 @@ namespace MediatR.Courier
                         : new object[] { n };
 
                     var result = action.DynamicInvoke(parameters);
-                    if (result is Task task) await task.ConfigureAwait(false);
+                    if (result is Task task) await task.ConfigureAwait(_options.CaptureThreadContext);
                 }
             }
 
