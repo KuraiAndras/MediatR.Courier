@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
@@ -9,6 +9,10 @@ namespace MediatR.Courier
     public sealed class MediatRCourier : ICourier, INotificationHandler<INotification>
     {
         private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new();
+
+        private readonly CourierOptions _options;
+
+        public MediatRCourier(CourierOptions options) => _options = options;
 
         public Task Handle(INotification notification, CancellationToken cancellationToken)
         {

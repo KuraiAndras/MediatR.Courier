@@ -7,10 +7,12 @@ namespace MediatR.Courier.Tests
 {
     public sealed class InterfaceClientTests
     {
+        private readonly CourierOptions _options = new CourierOptions { CaptureThreadContext = false };
+
         [Fact]
         public async Task SubscribedMethodInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var testClient = new TestInterfaceClient1Cancellation(mediatRCourier);
 
@@ -22,7 +24,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task MultipleSubscribedMethodsInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var testClient = new TestInterfaceClientWithTwoMethods(mediatRCourier);
 
@@ -36,7 +38,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task MultipleSubscribedAsyncMethodsInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var testClient = new TestInterfaceClientWithTwoAsyncMethods(mediatRCourier);
 
@@ -50,7 +52,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task UnSubscribedMethodNotInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var testClient = new TestInterfaceClient1Cancellation(mediatRCourier);
 
@@ -64,7 +66,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task MultipleUnSubscribedMethodsNotInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var testClient = new TestInterfaceClientWithTwoMethods(mediatRCourier);
 
@@ -80,7 +82,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task MultipleUnSubscribedAsyncMethodsNotInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var testClient = new TestInterfaceClientWithTwoAsyncMethods(mediatRCourier);
 

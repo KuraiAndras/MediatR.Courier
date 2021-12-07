@@ -12,7 +12,7 @@ namespace MediatR.Courier.Tests
     {
         private readonly MediatRCourier _courier;
 
-        public ConventionClientTests() => _courier = new MediatRCourier();
+        public ConventionClientTests() => _courier = new MediatRCourier(new CourierOptions { CaptureThreadContext = false });
 
 #pragma warning disable SA1009 // Closing parenthesis should be spaced correctly
         [Theory]
