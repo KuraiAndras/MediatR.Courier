@@ -10,6 +10,10 @@ namespace MediatR.Courier
     {
         private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new();
 
+        private readonly CourierOptions _options;
+
+        public MediatRCourier(CourierOptions options) => _options = options;
+
         public Task Handle(INotification notification, CancellationToken cancellationToken)
         {
             async Task HandleLocal(INotification n, CancellationToken c)
@@ -25,7 +29,7 @@ namespace MediatR.Courier
                         : new object[] { n };
 
                     var result = action.DynamicInvoke(parameters);
-                    if (result is Task task) await task.ConfigureAwait(false);
+                    if (result is Task task) await task.ConfigureAwait(_options.CaptureThreadContext);
                 }
             }
 

@@ -6,7 +6,6 @@
 
   <PropertyGroup>
     <NoWarn>$(NoWarn),1573,1591,1712,SA0001</NoWarn>
-    <EditorConfig>../.editorconfig</EditorConfig>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -23,19 +22,6 @@
 
   <ItemGroup>
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="3.1.0" PrivateAssets="all"/>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.19.0.28253" PrivateAssets="all"/>
   </ItemGroup>
 
 </Project>
