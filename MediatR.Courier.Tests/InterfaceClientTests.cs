@@ -7,7 +7,7 @@ namespace MediatR.Courier.Tests
 {
     public sealed class InterfaceClientTests
     {
-        private readonly CourierOptions _options = new CourierOptions { CaptureThreadContext = false };
+        private readonly CourierOptions _options = new() { CaptureThreadContext = false };
 
         [Fact]
         public async Task SubscribedMethodInvoked()

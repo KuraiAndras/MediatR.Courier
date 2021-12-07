@@ -10,7 +10,7 @@ namespace MediatR.Courier.Tests
 {
     public sealed class CourierTests
     {
-        private readonly CourierOptions _options = new CourierOptions { CaptureThreadContext = false };
+        private readonly CourierOptions _options = new() { CaptureThreadContext = false };
 
         [Theory]
         [ClassData(typeof(AsyncTestData))]
