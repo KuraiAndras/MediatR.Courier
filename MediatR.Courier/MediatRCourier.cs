@@ -9,6 +9,7 @@ namespace MediatR.Courier
     public sealed class MediatRCourier : ICourier, INotificationHandler<INotification>
     {
         private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new();
+        private readonly ConcurrentDictionary<Type, ConcurrentBag<(WeakReference<Delegate> action, bool needsToken)>> _weakActions = new();
 
         private readonly CourierOptions _options;
 
@@ -20,7 +21,16 @@ namespace MediatR.Courier
             {
                 var notificationType = n.GetType();
 
-                if (!_actions.TryGetValue(notificationType, out var subscribers)) return;
+                if (!_actions.TryGetValue(notificationType, out var subscribers)) subscribers = new();
+                if (!_weakActions.TryGetValue(notificationType, out var weakSubscribers)) weakSubscribers = new();
+
+                foreach (var weakSubscriber in weakSubscribers)
+                {
+                    if (weakSubscriber.action.TryGetTarget(out var action))
+                    {
+                        subscribers.Add((action, weakSubscriber.needsToken));
+                    }
+                }
 
                 foreach (var (action, needsToken) in subscribers)
                 {
@@ -40,19 +50,35 @@ namespace MediatR.Courier
 
         public void Subscribe<TNotification>(Action<TNotification> handler)
             where TNotification : INotification =>
-            Subscribe<TNotification>((handler, false));
+            Subscribe<TNotification>((handler, false), false);
 
         public void Subscribe<TNotification>(Action<TNotification, CancellationToken> handler)
             where TNotification : INotification =>
-            Subscribe<TNotification>((handler, true));
+            Subscribe<TNotification>((handler, true), false);
 
         public void Subscribe<TNotification>(Func<TNotification, Task> handler)
             where TNotification : INotification =>
-            Subscribe<TNotification>((handler, false));
+            Subscribe<TNotification>((handler, false), false);
 
         public void Subscribe<TNotification>(Func<TNotification, CancellationToken, Task> handler)
             where TNotification : INotification =>
-            Subscribe<TNotification>((handler, true));
+            Subscribe<TNotification>((handler, true), false);
+
+        public void SubscribeWeak<TNotification>(Action<TNotification> handler)
+            where TNotification : INotification =>
+            Subscribe<TNotification>((handler, false), true);
+
+        public void SubscribeWeak<TNotification>(Action<TNotification, CancellationToken> handler)
+            where TNotification : INotification =>
+            Subscribe<TNotification>((handler, true), true);
+
+        public void SubscribeWeak<TNotification>(Func<TNotification, Task> handler)
+            where TNotification : INotification =>
+            Subscribe<TNotification>((handler, false), true);
+
+        public void SubscribeWeak<TNotification>(Func<TNotification, CancellationToken, Task> handler)
+            where TNotification : INotification =>
+            Subscribe<TNotification>((handler, true), true);
 
         public void UnSubscribe<TNotification>(Action<TNotification> handler)
             where TNotification : INotification =>
@@ -70,17 +96,34 @@ namespace MediatR.Courier
             where TNotification : INotification =>
             UnSubscribe<TNotification>((Delegate)handler);
 
-        private void Subscribe<TNotification>((Delegate handler, bool needsCancellation) subscriber)
+        private void Subscribe<TNotification>((Delegate handler, bool needsCancellation) subscriber, bool weak)
             where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
-            if (_actions.TryGetValue(notificationType, out var subscribers))
+
+            if (weak)
             {
-                subscribers.Add(subscriber);
+                var weakSubscriber = (new WeakReference<Delegate>(subscriber.handler), subscriber.needsCancellation);
+
+                if (_weakActions.TryGetValue(notificationType, out var subscribers))
+                {
+                    subscribers.Add(weakSubscriber);
+                }
+                else
+                {
+                    _weakActions.TryAdd(notificationType, new ConcurrentBag<(WeakReference<Delegate>, bool)>(new[] { weakSubscriber }));
+                }
             }
             else
             {
-                _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new[] { subscriber }));
+                if (_actions.TryGetValue(notificationType, out var subscribers))
+                {
+                    subscribers.Add(subscriber);
+                }
+                else
+                {
+                    _actions.TryAdd(notificationType, new ConcurrentBag<(Delegate, bool)>(new[] { subscriber }));
+                }
             }
         }
 
@@ -88,12 +131,36 @@ namespace MediatR.Courier
             where TNotification : INotification
         {
             var notificationType = typeof(TNotification);
+            Remove(handler, notificationType);
+            RemoveWeak(handler, notificationType);
+        }
+
+        private void Remove(Delegate handler, Type notificationType)
+        {
             if (!_actions.TryGetValue(notificationType, out var subscribers)) return;
 
-            var remainingSubscribers = new ConcurrentBag<(Delegate, bool)>(subscribers.Where(subscriber => !subscriber.action.Equals(handler)));
+            var remainingSubscribers = new ConcurrentBag<(Delegate, bool)>(subscribers.Where(subscriber => subscriber.action != handler));
 
             _actions.TryRemove(notificationType, out _);
             _actions.TryAdd(notificationType, remainingSubscribers);
+        }
+
+        private void RemoveWeak(Delegate handler, Type notificationType)
+        {
+            if (!_weakActions.TryGetValue(notificationType, out var subscribers)) return;
+
+            var remainingSubscribers = new ConcurrentBag<(WeakReference<Delegate>, bool)>
+            (
+                subscribers
+                    .Where(subscriber =>
+                    {
+                        if (subscriber.action.TryGetTarget(out var weakHandler)) return false;
+                        return weakHandler != handler;
+                    })
+            );
+
+            _weakActions.TryRemove(notificationType, out _);
+            _weakActions.TryAdd(notificationType, remainingSubscribers);
         }
     }
 }
