@@ -57,7 +57,6 @@ namespace MediatR.Courier.Tests
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            GC.WaitForFullGCComplete();
             GC.Collect();
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
