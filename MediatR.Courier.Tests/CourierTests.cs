@@ -10,11 +10,13 @@ namespace MediatR.Courier.Tests
 {
     public sealed class CourierTests
     {
+        private readonly CourierOptions _options = new() { CaptureThreadContext = false };
+
         [Theory]
         [ClassData(typeof(AsyncTestData))]
         public async Task AsyncVoidActionMightCompleteInTime(TimeSpan delayTime)
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var receivedMessage = false;
 
@@ -42,7 +44,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task SubscribedActionInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var receivedMessage = false;
 
@@ -58,7 +60,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task SubscribedAsyncActionInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var receivedMessage = false;
 
@@ -79,7 +81,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task UnSubscribedActionNotInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var receivedMessageCount = 0;
 
@@ -99,7 +101,7 @@ namespace MediatR.Courier.Tests
         [Fact]
         public async Task UnSubscribedAsyncActionNotInvoked()
         {
-            var mediatRCourier = new MediatRCourier();
+            var mediatRCourier = new MediatRCourier(_options);
 
             var receivedMessageCount = 0;
 

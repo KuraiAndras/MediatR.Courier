@@ -20,5 +20,8 @@
         <Button
             Click="OpenWindowClicked"
             Content="Open Window"/>
+        <Button
+            Click="OnRunGcClicked"
+            Content="Run GC" />
     </StackPanel>
 </Window>
