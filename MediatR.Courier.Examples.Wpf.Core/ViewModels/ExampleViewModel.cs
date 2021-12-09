@@ -18,7 +18,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
         {
             if (Courier is null) throw new ArgumentNullException(nameof(courier));
 
-            Courier.Subscribe<ExampleNotification>(ExampleNotificationFired);
+            Courier.SubscribeWeak<ExampleNotification>(ExampleNotificationFired);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -32,8 +32,6 @@ namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
         public async Task InitializeAsync() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
 
         public async Task IncrementNotificationCountAsync() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
-
-        public void Dispose() => Courier.UnSubscribe<ExampleNotification>(ExampleNotificationFired);
 
         private void SetAndNotifyPropertyChanged<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = default)
         {

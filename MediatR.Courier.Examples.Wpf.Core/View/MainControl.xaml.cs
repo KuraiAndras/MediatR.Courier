@@ -3,11 +3,9 @@ using System.Windows;
 
 namespace MediatR.Courier.Examples.Wpf.Core.View
 {
-    public sealed partial class MainControl : IDisposable
+    public sealed partial class MainControl
     {
         public MainControl() => InitializeComponent();
-
-        public void Dispose() => ViewModel.Dispose();
 
         protected override void OnInitialized(EventArgs e)
         {
