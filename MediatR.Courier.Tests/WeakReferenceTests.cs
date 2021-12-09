@@ -55,6 +55,8 @@ namespace MediatR.Courier.Tests
 
             handler = null;
 
+            // We wait for some time to make sure that the gc actually collects and runs
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();

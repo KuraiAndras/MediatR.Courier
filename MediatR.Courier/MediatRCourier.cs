@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace MediatR.Courier
     public sealed class MediatRCourier : ICourier, INotificationHandler<INotification>
     {
         private readonly ConcurrentDictionary<Type, ConcurrentBag<(Delegate action, bool needsToken)>> _actions = new();
-        private readonly ConcurrentDictionary<Type, ConcurrentBag<(WeakReference<Delegate> action, bool needsToken)>> _weakActions = new();
+        private readonly ConcurrentDictionary<Type, ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>> _weakActions = new();
 
         private readonly CourierOptions _options;
 
@@ -24,13 +25,25 @@ namespace MediatR.Courier
                 if (!_actions.TryGetValue(notificationType, out var subscribers)) subscribers = new();
                 if (!_weakActions.TryGetValue(notificationType, out var weakSubscribers)) weakSubscribers = new();
 
-                foreach (var weakSubscriber in weakSubscribers)
+                var remainingSubscribers = new ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>();
+
+                foreach (var (target, methodInfo, needsToken) in weakSubscribers)
                 {
-                    if (weakSubscriber.action.TryGetTarget(out var action))
+                    if (target.TryGetTarget(out var handler))
                     {
-                        subscribers.Add((action, weakSubscriber.needsToken));
+                        var parameters = needsToken
+                            ? new object[] { n, c }
+                            : new object[] { n };
+
+                        var result = methodInfo.Invoke(handler, parameters);
+                        if (result is Task task) await task.ConfigureAwait(_options.CaptureThreadContext);
+
+                        remainingSubscribers.Add((target, methodInfo, needsToken));
                     }
                 }
+
+                _weakActions.TryRemove(notificationType, out _);
+                _weakActions.TryAdd(notificationType, remainingSubscribers);
 
                 foreach (var (action, needsToken) in subscribers)
                 {
@@ -103,7 +116,7 @@ namespace MediatR.Courier
 
             if (weak)
             {
-                var weakSubscriber = (new WeakReference<Delegate>(subscriber.handler), subscriber.needsCancellation);
+                var weakSubscriber = (new WeakReference<object>(subscriber.handler.Target), subscriber.handler.Method, subscriber.needsCancellation);
 
                 if (_weakActions.TryGetValue(notificationType, out var subscribers))
                 {
@@ -111,7 +124,7 @@ namespace MediatR.Courier
                 }
                 else
                 {
-                    _weakActions.TryAdd(notificationType, new ConcurrentBag<(WeakReference<Delegate>, bool)>(new[] { weakSubscriber }));
+                    _weakActions.TryAdd(notificationType, new ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>(new[] { weakSubscriber }));
                 }
             }
             else
@@ -149,13 +162,13 @@ namespace MediatR.Courier
         {
             if (!_weakActions.TryGetValue(notificationType, out var subscribers)) return;
 
-            var remainingSubscribers = new ConcurrentBag<(WeakReference<Delegate>, bool)>
+            var remainingSubscribers = new ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>
             (
                 subscribers
                     .Where(subscriber =>
                     {
-                        if (subscriber.action.TryGetTarget(out var weakHandler)) return false;
-                        return weakHandler != handler;
+                        if (subscriber.target.TryGetTarget(out var weakHandler)) return false;
+                        return weakHandler != handler.Target;
                     })
             );
 
