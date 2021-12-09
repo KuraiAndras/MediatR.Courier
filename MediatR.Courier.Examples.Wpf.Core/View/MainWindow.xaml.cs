@@ -20,9 +20,7 @@ namespace MediatR.Courier.Examples.Wpf.Core.View
         private async void OnRunGcClicked(object sender, RoutedEventArgs e)
         {
             await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            GC.Collect(2, GCCollectionMode.Forced, true);
         }
     }
 }

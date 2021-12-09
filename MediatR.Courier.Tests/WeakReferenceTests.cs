@@ -57,9 +57,7 @@ namespace MediatR.Courier.Tests
 
             // We wait for some time to make sure that the gc actually collects and runs
             await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            GC.Collect(2, GCCollectionMode.Forced, true);
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
