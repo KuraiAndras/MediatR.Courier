@@ -108,6 +108,14 @@ The difference from those implementations is that most of them implement this co
 
 In the same way as using MediatR can be thought of as replacing business layer services to MediatR Requests and RequestHandlers, Courier is the same for events: replacing them with INotifications.
 
+### Weak references
+
+You can create a weak subscription by using the `SubscribeWeak` method. This subscription uses a `WeakReference` which will let the subscriber to be garbage collected without the need to unsubscribe (although you still can unsubscribe manually). Subscribing methods on `MonoBehavior` instances might result in unexpected behavior, so you should be careful with it
+
+### Capturing thread context
+
+You can configure how the Courier awaits the sent notifications. To change the behavior modify the `CaptureThreadContext` property on the `CourierOptions` class. When using dependency injection, you can change this behavior during runtime, because the `CourierOptions` is accessible through DI.
+
 ### Extras
 To make subscribing and unsubscribing from events easier this library provides two helper classes to help you do your registrations:
 
