@@ -18,14 +18,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1.7.2
-
-      - name: Setup Tools .NET SDK
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: '3.1.x'
-
       - name: Set up JDK for Sonar
         uses: actions/setup-java@v1
         with:
