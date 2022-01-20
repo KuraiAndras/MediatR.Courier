@@ -6,9 +6,6 @@
     "build": {
       "type": "object",
       "properties": {
-        "CiBuild": {
-          "type": "boolean"
-        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",

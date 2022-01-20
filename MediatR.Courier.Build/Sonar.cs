@@ -17,7 +17,7 @@ sealed partial class Build
         .Requires(() => SonarHostUrl)
         .Requires(() => SonarOrganization)
         .Executes(() => SonarScannerBegin(s => s
-            .SetFramework("net5.0")
+            .SetFramework("net6.0")
             .SetProjectKey(SonarProjectKey)
             .SetLogin(SonarToken)
             .SetServer(SonarHostUrl)
@@ -30,7 +30,7 @@ sealed partial class Build
         .DependsOn(SonarBegin)
         .DependsOn(Test)
         .Executes(() => SonarScannerEnd(s => s
-            .SetFramework("net5.0")
+            .SetFramework("net6.0")
             .SetLogin(SonarToken)));
 
     Target RunCi => _ => _
