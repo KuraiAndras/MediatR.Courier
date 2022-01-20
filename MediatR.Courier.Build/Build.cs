@@ -20,7 +20,7 @@ partial class Build : NukeBuild
     [Parameter] readonly bool CiBuild;
 
     [Solution] readonly Solution Solution;
-    [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion? GitVersion;
+    [GitVersion] readonly GitVersion? GitVersion;
     [PathExecutable] readonly Tool Git;
 
     string TagVersion => Git.Invoke("describe --tags").First().Text ?? throw new InvalidOperationException("Cloud not get version from git");
