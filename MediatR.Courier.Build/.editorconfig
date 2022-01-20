@@ -35,3 +35,6 @@ dotnet_diagnostic.RCS1213.severity = none
 
 # S1075: URIs should not be hardcoded
 dotnet_diagnostic.S1075.severity = none
+
+# CA1050: Declare types in namespaces
+dotnet_diagnostic.CA1050.severity = none
