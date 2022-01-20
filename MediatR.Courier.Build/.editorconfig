@@ -38,3 +38,6 @@ dotnet_diagnostic.S1075.severity = none
 
 # CA1050: Declare types in namespaces
 dotnet_diagnostic.CA1050.severity = none
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none

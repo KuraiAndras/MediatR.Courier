@@ -1,4 +1,4 @@
-﻿using Nuke.Common;
+using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.SonarScanner;
 using static Nuke.Common.Tools.SonarScanner.SonarScannerTasks;
@@ -17,7 +17,7 @@ sealed partial class Build
         .Requires(() => SonarHostUrl)
         .Requires(() => SonarOrganization)
         .Executes(() => SonarScannerBegin(s => s
-            .SetFramework("net6.0")
+            .SetFramework("net5.0")
             .SetProjectKey(SonarProjectKey)
             .SetLogin(SonarToken)
             .SetServer(SonarHostUrl)
@@ -30,7 +30,7 @@ sealed partial class Build
         .DependsOn(SonarBegin)
         .DependsOn(Test)
         .Executes(() => SonarScannerEnd(s => s
-            .SetFramework("net6.0")
+            .SetFramework("net5.0")
             .SetLogin(SonarToken)));
 
     Target RunCi => _ => _
