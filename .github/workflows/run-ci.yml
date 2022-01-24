@@ -18,22 +18,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1.7.2
-
-      - name: Setup Tools .NET SDK
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: '3.1.x'
-
       - name: Set up JDK for Sonar
         uses: actions/setup-java@v1
         with:
-          java-version: 15
+          java-version: 17
 
-      - name: Run CI
-        shell: pwsh
+      - name: Run './build.cmd RunCi'
+        run: ./build.cmd RunCi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./build.ps1 RunCi --configuration Release --sonar-host-url "https://sonarcloud.io" --sonar-project-key "KuraiAndras_MediatR.Courier" --sonar-token "${{ secrets.SONAR_TOKEN }}" --sonar-organization "kuraiandras"
+          SonarHostUrl: ${{ secrets.SONAR_HOST_URL }}
+          SonarProjectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          SonarToken: ${{ secrets.SONAR_TOKEN }}
+          SonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
