@@ -12,15 +12,13 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [ShutdownDotNetAfterServerBuild]
 partial class Build : NukeBuild
 {
-    public static int Main() => Execute<Build>(x => x.Compile);
+    public static int Main() => Execute<Build>(x => x.Test);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Parameter] readonly bool CiBuild;
-
     [Solution] readonly Solution Solution;
-    [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion? GitVersion;
+    [GitVersion] readonly GitVersion? GitVersion;
     [PathExecutable] readonly Tool Git;
 
     string TagVersion => Git.Invoke("describe --tags").First().Text ?? throw new InvalidOperationException("Cloud not get version from git");
@@ -45,7 +43,6 @@ partial class Build : NukeBuild
         .Executes(() => DotNetBuild(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
-            .SetContinuousIntegrationBuild(CiBuild)
             .SetAssemblyVersion(AssemblyVersion)
             .SetFileVersion(AssemblyFileVersion)
             .SetInformationalVersion(InformationalVersion)

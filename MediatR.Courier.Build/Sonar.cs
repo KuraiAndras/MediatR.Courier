@@ -1,4 +1,4 @@
-﻿using Nuke.Common;
+using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.SonarScanner;
 using static Nuke.Common.Tools.SonarScanner.SonarScannerTasks;
