@@ -31,7 +31,7 @@ Working with events:
 
 ```c#
 // Using an regular C# event:
-Action Handler()
+void Handler()
 {
     //Implementation
 }
@@ -40,12 +40,12 @@ EventProducer producer.ExampleEvent -= Handler;
 
 // Using Courier:
 
-Action<ExampleNotification> Handler(ExampleEvent notification)
+void Handler(ExampleEvent notification)
 {
     //Implementation
 }
 
-ICourier courier = //Create courier
+ICourier courier = ;//Create courier
 
 courier.Subscribe<ExampleEvent>(Handler);
 courier.UnSubscribe<ExampleEvent>(Handler);
@@ -70,7 +70,7 @@ public class EventProducer
 // Courier
 public class EventProducer
 {
-    private IMediator _mediator = //Get mediator
+    private IMediator _mediator = ;//Get mediator
 
     public void RaiseEvent()
     {
