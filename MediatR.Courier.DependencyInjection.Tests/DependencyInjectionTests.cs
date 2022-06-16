@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
+using static MediatR.Courier.DependencyInjection.Tests.TestHelper;
+
 namespace MediatR.Courier.DependencyInjection.Tests;
 
 public class DependencyInjectionTests
@@ -43,19 +45,5 @@ public class DependencyInjectionTests
         await mediator.Publish(new TestNotification()).ConfigureAwait(false);
 
         Assert.True(receivedMessage);
-    }
-
-    private static (IServiceProvider serviceProvider, IMediator mediator, ICourier courier) SetUpCourier()
-    {
-        var services = new ServiceCollection()
-            .AddMediatR(typeof(TestResourcesMarkerType))
-            .AddCourier(typeof(TestResourcesMarkerType).Assembly);
-
-        var serviceProvider = services.BuildServiceProvider();
-
-        var mediator = serviceProvider.GetRequiredService<IMediator>();
-        var courier = serviceProvider.GetRequiredService<ICourier>();
-
-        return (serviceProvider, mediator, courier);
     }
 }

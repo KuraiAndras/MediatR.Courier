@@ -25,8 +25,10 @@ public static class CourierInjector
             .SelectMany(a => a.GetTypes())
             .Where(t => t.GetInterfaces().Any(i => i == notificationType)))
         {
+            var serviceType = notificationHandlerType.MakeGenericType(notificationImplementation);
+
             services.AddSingleton(
-                notificationHandlerType.MakeGenericType(notificationImplementation),
+                serviceType,
                 serviceProvider => serviceProvider.GetService(typeof(MediatRCourier)));
         }
 

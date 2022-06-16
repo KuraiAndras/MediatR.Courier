@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using MediatR
 @using MediatR.Courier
+@using System.Diagnostics
 
 @implements IDisposable
 
@@ -17,7 +18,18 @@ Last message was: @_lastMessage
 
 @code
 {
-	record Message<T>(T Data) : INotification;
+	public record Message<T>(T Data) : INotification;
+
+	public class GenericHandler : INotificationHandler<Message<string>>
+	{
+		public Task Handle(Message<string> notification, CancellationToken cancellationToken)
+		{
+			Debug.WriteLine("Hello");
+			Console.WriteLine("Hello");
+
+			return Task.CompletedTask;
+		}
+	}
 
 	private int _messageCount;
 	private string? _lastMessage;
