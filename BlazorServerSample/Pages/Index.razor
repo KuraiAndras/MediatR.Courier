@@ -4,32 +4,36 @@
 
 @implements IDisposable
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Testing</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.<br />
-
-Received messsages: @_messageCount<br />
+Received messsages: @_messageCount
+<br />
+Last message was: @_lastMessage
+<br />
 
 <button @onclick="@Publish">Publish</button>
 
-<SurveyPrompt Title="How is Courier working for you?" />
-
 @code
 {
-	record Message() : INotification;
+	record Message<T>(T Data) : INotification;
 
 	private int _messageCount;
+	private string? _lastMessage;
 
 	[Inject] private IMediator Mediator { get; init; } = default!;
 	[Inject] private ICourier Courier { get; init; } = default!;
 
-	protected override void OnInitialized() => Courier.Subscribe<Message>(Receive);
+	protected override void OnInitialized() => Courier.Subscribe<Message<string>>(Receive);
 
-	public void Dispose() => Courier.UnSubscribe<Message>(Receive);
+	public void Dispose() => Courier.UnSubscribe<Message<string>>(Receive);
 
-	private async Task Publish() => await Mediator.Publish(new Message());
+	private async Task Publish() => await Mediator.Publish(new Message<string>("Hello"));
 
-	private void Receive(Message _) => _messageCount++;
+	private void Receive(Message<string> message)
+	{
+		_messageCount++;
+		_lastMessage = message.Data;
+	}
 }
