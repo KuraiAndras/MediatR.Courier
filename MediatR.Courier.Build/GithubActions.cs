@@ -7,7 +7,7 @@
     OnPushTags = new[] { "*" },
     InvokedTargets = new[] { nameof(PushToNuGet) },
     ImportSecrets = new[] { nameof(NugetApiKey), "GITHUB_TOKEN" },
-    EnableGitHubContext = true
+    FetchDepth = 0
 )]
 public partial class Build
 {
