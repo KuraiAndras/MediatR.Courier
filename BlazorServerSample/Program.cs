@@ -1,4 +1,6 @@
 ﻿using BlazorServerSample.Data;
+using MediatR;
+using MediatR.Courier.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddMediatR(typeof(Program).Assembly);
+builder.Services.AddCourier(typeof(Program).Assembly);
 
 var app = builder.Build();
 
