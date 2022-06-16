@@ -1,6 +1,5 @@
-﻿namespace MediatR.Courier.Examples.Shared.Requests
+﻿namespace MediatR.Courier.Examples.Shared.Requests;
+
+public sealed class NotificationCountQuery : IRequest<int>
 {
-    public sealed class NotificationCountQuery : IRequest<int>
-    {
-    }
 }

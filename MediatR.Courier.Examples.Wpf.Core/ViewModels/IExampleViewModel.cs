@@ -1,15 +1,12 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
-namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
+namespace MediatR.Courier.Examples.Wpf.Core.ViewModels;
+
+public interface IExampleViewModel : INotifyPropertyChanged
 {
-    public interface IExampleViewModel : INotifyPropertyChanged
-    {
-        int NotificationCount { get; }
+    int NotificationCount { get; }
 
-        Task InitializeAsync();
+    Task InitializeAsync();
 
-        Task IncrementNotificationCountAsync();
-    }
+    Task IncrementNotificationCountAsync();
 }

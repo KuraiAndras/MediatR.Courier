@@ -1,6 +1,5 @@
-﻿namespace MediatR.Courier.TestResources
+﻿namespace MediatR.Courier.TestResources;
+
+public sealed class TestResourcesMarkerType
 {
-    public sealed class TestResourcesMarkerType
-    {
-    }
 }

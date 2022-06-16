@@ -1,54 +1,50 @@
 ﻿using MediatR.Courier.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace MediatR.Courier
+namespace MediatR.Courier;
+
+public abstract class CourierInterfaceClient : IDisposable
 {
-    public abstract class CourierInterfaceClient : IDisposable
+    private readonly ICourier _courier;
+    private readonly ICollection<Delegate> _handlers;
+
+    protected CourierInterfaceClient(ICourier courier)
     {
-        private readonly ICourier _courier;
-        private readonly ICollection<Delegate> _handlers;
+        _courier = courier;
+        var subType = GetType();
 
-        protected CourierInterfaceClient(ICourier courier)
+        _handlers = subType.GetInterfaces()
+            .Where(i =>
+                i.IsGenericType
+                && (i.GetGenericTypeDefinition() != typeof(ICourierNotificationHandler<>)
+                    || i.GetGenericTypeDefinition() != typeof(ICourierNotificationHandlerAsync<>)))
+            .SelectMany(i => i
+                .GetMethods()
+                .Select(methodInfo =>
+                {
+                    var handler = Delegate.CreateDelegate(methodInfo.CreateCourierHandlerType(), this, methodInfo);
+
+                    _courier.InvokeCourierMethod(nameof(ICourier.Subscribe), handler.Method, handler);
+
+                    return handler;
+                }))
+            .ToList();
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing) return;
+
+        foreach (var handler in _handlers)
         {
-            _courier = courier;
-            var subType = GetType();
-
-            _handlers = subType.GetInterfaces()
-                .Where(i =>
-                    i.IsGenericType
-                    && (i.GetGenericTypeDefinition() != typeof(ICourierNotificationHandler<>)
-                        || i.GetGenericTypeDefinition() != typeof(ICourierNotificationHandlerAsync<>)))
-                .SelectMany(i => i
-                    .GetMethods()
-                    .Select(methodInfo =>
-                    {
-                        var handler = Delegate.CreateDelegate(methodInfo.CreateCourierHandlerType(), this, methodInfo);
-
-                        _courier.InvokeCourierMethod(nameof(ICourier.Subscribe), handler.Method, handler);
-
-                        return handler;
-                    }))
-                .ToList();
+            _courier.InvokeCourierMethod(nameof(ICourier.UnSubscribe), handler.Method, handler);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-
-            foreach (var handler in _handlers)
-            {
-                _courier.InvokeCourierMethod(nameof(ICourier.UnSubscribe), handler.Method, handler);
-            }
-
-            _handlers.Clear();
-        }
+        _handlers.Clear();
     }
 }

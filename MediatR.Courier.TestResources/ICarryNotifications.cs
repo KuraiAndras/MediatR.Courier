@@ -1,9 +1,8 @@
-﻿namespace MediatR.Courier.TestResources
-{
-    public interface ICarryNotifications
-    {
-        int MessageReceivedCount { get; }
+﻿namespace MediatR.Courier.TestResources;
 
-        int ProperlyImplementedHandleCount { get; }
-    }
+public interface ICarryNotifications
+{
+    int MessageReceivedCount { get; }
+
+    int ProperlyImplementedHandleCount { get; }
 }

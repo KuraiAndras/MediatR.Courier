@@ -1,27 +1,22 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿namespace MediatR.Courier.TestResources;
 
-namespace MediatR.Courier.TestResources
+public sealed class TestConventionClient1Cancellation : CourierConventionClient, ICarryNotifications
 {
-    public sealed class TestConventionClient1Cancellation : CourierConventionClient, ICarryNotifications
+    public TestConventionClient1Cancellation(ICourier courier)
+        : base(courier)
     {
-        public TestConventionClient1Cancellation(ICourier courier)
-            : base(courier)
-        {
-        }
+    }
 
-        public int MessageReceivedCount { get; private set; }
+    public int MessageReceivedCount { get; private set; }
 
-        public int ProperlyImplementedHandleCount => 2;
+    public int ProperlyImplementedHandleCount => 2;
 
-        public void Handle(TestNotification _, CancellationToken __) => MessageReceivedCount++;
+    public void Handle(TestNotification _, CancellationToken __) => MessageReceivedCount++;
 
-        public async Task HandleAsync(TestNotification _, CancellationToken cancellationToken)
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
+    public async Task HandleAsync(TestNotification _, CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
 
-            MessageReceivedCount++;
-        }
+        MessageReceivedCount++;
     }
 }
