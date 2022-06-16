@@ -34,7 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediatR.Courier.Build", "Me
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{63976DF4-337C-4C39-A76B-9DAAEFC9C0A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorServerSample", "BlazorServerSample\BlazorServerSample.csproj", "{62617989-6504-4477-AC0A-B4E07FDB4D41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorServerSample", "BlazorServerSample\BlazorServerSample.csproj", "{62617989-6504-4477-AC0A-B4E07FDB4D41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatR.Courier.GenericTests", "MediatR.Courier.GenericTests\MediatR.Courier.GenericTests.csproj", "{CAD68803-EE4E-4227-A35A-B2ED247D5CC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +78,10 @@ Global
 		{62617989-6504-4477-AC0A-B4E07FDB4D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62617989-6504-4477-AC0A-B4E07FDB4D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62617989-6504-4477-AC0A-B4E07FDB4D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAD68803-EE4E-4227-A35A-B2ED247D5CC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAD68803-EE4E-4227-A35A-B2ED247D5CC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAD68803-EE4E-4227-A35A-B2ED247D5CC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAD68803-EE4E-4227-A35A-B2ED247D5CC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{9940DAEA-7AF6-4914-BCFF-0ACBFA6C3FB2} = {36F518A8-F765-46C3-A6B8-E55282D191A1}
 		{655E9E1E-C07A-4D04-87FE-6B5B21FB0346} = {63976DF4-337C-4C39-A76B-9DAAEFC9C0A1}
 		{62617989-6504-4477-AC0A-B4E07FDB4D41} = {36F518A8-F765-46C3-A6B8-E55282D191A1}
+		{CAD68803-EE4E-4227-A35A-B2ED247D5CC4} = {618C01D2-4A0F-4111-A22F-E7647A7DA30B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {38D89286-0FF5-415E-BD34-0622A3FFB77B}
