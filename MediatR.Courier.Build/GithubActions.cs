@@ -10,7 +10,9 @@ using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
     InvokedTargets = new[] { nameof(PushToNuGet) },
     ImportSecrets = new[] { nameof(NugetApiKey) },
     EnableGitHubToken = true,
-    FetchDepth = 0
+    FetchDepth = 0,
+    CacheIncludePatterns = new string[0],
+    CacheKeyFiles = new string[0]
 )]
 [GitHubActions
 (
@@ -27,7 +29,9 @@ using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
         nameof(SonarOrganization),
     },
     EnableGitHubToken = true,
-    FetchDepth = 0
+    FetchDepth = 0,
+    CacheIncludePatterns = new string[0],
+    CacheKeyFiles = new string[0]
 )]
 public partial class Build
 {
