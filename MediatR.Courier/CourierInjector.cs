@@ -18,7 +18,7 @@ namespace MediatR.Courier
             services.AddSingleton(options);
 
             services.AddSingleton(typeof(MediatRCourier));
-            services.AddSingleton(typeof(ICourier), serviceProvider => serviceProvider.GetService(typeof(MediatRCourier)));
+            services.AddSingleton(typeof(ICourier), serviceProvider => serviceProvider.GetRequiredService(typeof(MediatRCourier)));
 
             var notificationType = typeof(INotification);
             var notificationHandlerType = typeof(INotificationHandler<>);
@@ -29,7 +29,7 @@ namespace MediatR.Courier
             {
                 services.AddSingleton(
                     notificationHandlerType.MakeGenericType(notificationImplementation),
-                    serviceProvider => serviceProvider.GetService(typeof(MediatRCourier)));
+                    serviceProvider => serviceProvider.GetRequiredService(typeof(MediatRCourier)));
             }
 
             return services;

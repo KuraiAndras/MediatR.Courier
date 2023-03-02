@@ -114,7 +114,7 @@ namespace MediatR.Courier
 
             if (weak)
             {
-                var weakSubscriber = (new WeakReference<object>(subscriber.handler.Target), subscriber.handler.Method, subscriber.needsCancellation);
+                var weakSubscriber = (new WeakReference<object>(subscriber.handler.Target!), subscriber.handler.Method, subscriber.needsCancellation);
 
                 if (_weakActions.TryGetValue(notificationType, out var subscribers))
                 {
