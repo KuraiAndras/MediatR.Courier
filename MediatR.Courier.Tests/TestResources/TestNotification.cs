@@ -1,6 +1,5 @@
-namespace MediatR.Courier.TestResources
+namespace MediatR.Courier.TestResources;
+
+public sealed class TestNotification : INotification
 {
-    public sealed class TestNotification : INotification
-    {
-    }
 }

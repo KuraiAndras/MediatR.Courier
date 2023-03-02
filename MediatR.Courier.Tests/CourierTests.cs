@@ -1,138 +1,133 @@
-﻿using MediatR.Courier.TestResources;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System.Collections;
 
-namespace MediatR.Courier.Tests
+using MediatR.Courier.TestResources;
+
+namespace MediatR.Courier.Tests;
+
+public sealed class CourierTests
 {
-    public sealed class CourierTests
+    private readonly CourierOptions _options = new() { CaptureThreadContext = false };
+
+    [Theory]
+    [ClassData(typeof(AsyncTestData))]
+    public async Task AsyncVoidActionMightCompleteInTime(TimeSpan delayTime)
     {
-        private readonly CourierOptions _options = new() { CaptureThreadContext = false };
+        var mediatRCourier = new MediatRCourier(_options);
 
-        [Theory]
-        [ClassData(typeof(AsyncTestData))]
-        public async Task AsyncVoidActionMightCompleteInTime(TimeSpan delayTime)
+        var receivedMessage = false;
+
+        async void NotificationAction(TestNotification _, CancellationToken cancellationToken)
         {
-            var mediatRCourier = new MediatRCourier(_options);
+            await Task.Delay(delayTime, cancellationToken).ConfigureAwait(false);
 
-            var receivedMessage = false;
-
-            async void NotificationAction(TestNotification _, CancellationToken cancellationToken)
-            {
-                await Task.Delay(delayTime, cancellationToken).ConfigureAwait(false);
-
-                receivedMessage = true;
-            }
-
-            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
-
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
-
-            if (delayTime.Ticks == 0)
-            {
-                Assert.True(receivedMessage);
-            }
-            else
-            {
-                Assert.False(receivedMessage);
-            }
+            receivedMessage = true;
         }
 
-        [Fact]
-        public async Task SubscribedActionInvoked()
+        mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        if (delayTime.Ticks == 0)
         {
-            var mediatRCourier = new MediatRCourier(_options);
-
-            var receivedMessage = false;
-
-            void NotificationAction(TestNotification _) => receivedMessage = true;
-
-            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
-
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
-
             Assert.True(receivedMessage);
         }
-
-        [Fact]
-        public async Task SubscribedAsyncActionInvoked()
+        else
         {
-            var mediatRCourier = new MediatRCourier(_options);
+            Assert.False(receivedMessage);
+        }
+    }
 
-            var receivedMessage = false;
+    [Fact]
+    public async Task SubscribedActionInvoked()
+    {
+        var mediatRCourier = new MediatRCourier(_options);
 
-            async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
-            {
-                receivedMessage = true;
+        var receivedMessage = false;
 
-                await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
-            }
+        void NotificationAction(TestNotification _) => receivedMessage = true;
 
-            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+        mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
-            Assert.True(receivedMessage);
+        Assert.True(receivedMessage);
+    }
+
+    [Fact]
+    public async Task SubscribedAsyncActionInvoked()
+    {
+        var mediatRCourier = new MediatRCourier(_options);
+
+        var receivedMessage = false;
+
+        async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
+        {
+            receivedMessage = true;
+
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task UnSubscribedActionNotInvoked()
+        mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        Assert.True(receivedMessage);
+    }
+
+    [Fact]
+    public async Task UnSubscribedActionNotInvoked()
+    {
+        var mediatRCourier = new MediatRCourier(_options);
+
+        var receivedMessageCount = 0;
+
+        void NotificationAction(TestNotification _) => ++receivedMessageCount;
+
+        mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        Assert.True(receivedMessageCount == 1);
+    }
+
+    [Fact]
+    public async Task UnSubscribedAsyncActionNotInvoked()
+    {
+        var mediatRCourier = new MediatRCourier(_options);
+
+        var receivedMessageCount = 0;
+
+        async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
         {
-            var mediatRCourier = new MediatRCourier(_options);
+            ++receivedMessageCount;
 
-            var receivedMessageCount = 0;
-
-            void NotificationAction(TestNotification _) => ++receivedMessageCount;
-
-            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
-
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
-
-            mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
-
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
-
-            Assert.True(receivedMessageCount == 1);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task UnSubscribedAsyncActionNotInvoked()
+        mediatRCourier.Subscribe<TestNotification>(NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        Assert.True(receivedMessageCount == 1);
+    }
+
+    private sealed class AsyncTestData : IEnumerable<object[]>
+    {
+        public IEnumerator<object[]> GetEnumerator()
         {
-            var mediatRCourier = new MediatRCourier(_options);
-
-            var receivedMessageCount = 0;
-
-            async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
-            {
-                ++receivedMessageCount;
-
-                await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
-            }
-
-            mediatRCourier.Subscribe<TestNotification>(NotificationAction);
-
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
-
-            mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
-
-            await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
-
-            Assert.True(receivedMessageCount == 1);
+            yield return new object[] { new TimeSpan(0L) };
+            yield return new object[] { new TimeSpan(0, 0, 0, 0, 1) };
+            yield return new object[] { new TimeSpan(0, 0, 0, 0, 10) };
         }
 
-        private sealed class AsyncTestData : IEnumerable<object[]>
-        {
-            public IEnumerator<object[]> GetEnumerator()
-            {
-                yield return new object[] { new TimeSpan(0L) };
-                yield return new object[] { new TimeSpan(0, 0, 0, 0, 1) };
-                yield return new object[] { new TimeSpan(0, 0, 0, 0, 10) };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

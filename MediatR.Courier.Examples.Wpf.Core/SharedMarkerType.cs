@@ -1,6 +1,5 @@
-﻿namespace MediatR.Courier.Examples.Shared
+﻿namespace MediatR.Courier.Examples.Shared;
+
+public sealed class SharedMarkerType
 {
-    public sealed class SharedMarkerType
-    {
-    }
 }

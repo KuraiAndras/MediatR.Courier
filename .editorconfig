@@ -170,8 +170,15 @@ csharp_space_between_square_brackets = false
 # Wrapping preferences
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_top_level_statements = true:silent
 
 #### Naming styles ####
+
+# IDE0055: Fix formatting
+dotnet_diagnostic.IDE0055.severity = warning
+
 [*.{cs,vb}]
 
 # Naming rules
@@ -356,3 +363,7 @@ dotnet_naming_style.camelcase.required_prefix =
 dotnet_naming_style.camelcase.required_suffix = 
 dotnet_naming_style.camelcase.word_separator = 
 dotnet_naming_style.camelcase.capitalization = camel_case
+tab_width = 4
+indent_size = 4
+end_of_line = crlf
+dotnet_style_namespace_match_folder = true:warning

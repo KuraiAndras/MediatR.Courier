@@ -1,47 +1,44 @@
-﻿using MediatR.Courier.Examples.Shared.Notifications;
-using MediatR.Courier.Examples.Shared.Requests;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace MediatR.Courier.Examples.Wpf.Core.ViewModels
+using MediatR.Courier.Examples.Shared.Notifications;
+using MediatR.Courier.Examples.Shared.Requests;
+
+namespace MediatR.Courier.Examples.Wpf.Core.ViewModels;
+
+public sealed class ExampleViewModel : ViewModelBase, IExampleViewModel
 {
-    public sealed class ExampleViewModel : ViewModelBase, IExampleViewModel
+    private int _notificationCount;
+
+    public ExampleViewModel(IMediator mediator, ICourier courier)
+        : base(mediator, courier)
     {
-        private int _notificationCount;
+        if (Courier is null) throw new ArgumentNullException(nameof(courier));
 
-        public ExampleViewModel(IMediator mediator, ICourier courier)
-            : base(mediator, courier)
-        {
-            if (Courier is null) throw new ArgumentNullException(nameof(courier));
-
-            Courier.SubscribeWeak<ExampleNotification>(ExampleNotificationFired);
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public int NotificationCount
-        {
-            get => _notificationCount;
-            private set => SetAndNotifyPropertyChanged(ref _notificationCount, value);
-        }
-
-        public async Task InitializeAsync() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
-
-        public async Task IncrementNotificationCountAsync() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
-
-        private void SetAndNotifyPropertyChanged<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = default)
-        {
-            if (backingField?.Equals(value) == true) return;
-
-            backingField = value;
-
-            Application.Current.Dispatcher?.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
-        }
-
-        private void ExampleNotificationFired(ExampleNotification notification, CancellationToken _) => NotificationCount = notification.NotificationCount;
+        Courier.SubscribeWeak<ExampleNotification>(ExampleNotificationFired);
     }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public int NotificationCount
+    {
+        get => _notificationCount;
+        private set => SetAndNotifyPropertyChanged(ref _notificationCount, value);
+    }
+
+    public async Task InitializeAsync() => NotificationCount = await Mediator.Send(new NotificationCountQuery()).ConfigureAwait(false);
+
+    public async Task IncrementNotificationCountAsync() => await Mediator.Send(new IncrementCallCountCommand()).ConfigureAwait(false);
+
+    private void SetAndNotifyPropertyChanged<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = default)
+    {
+        if (backingField?.Equals(value) == true) return;
+
+        backingField = value;
+
+        Application.Current.Dispatcher?.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+    }
+
+    private void ExampleNotificationFired(ExampleNotification notification, CancellationToken _) => NotificationCount = notification.NotificationCount;
 }
