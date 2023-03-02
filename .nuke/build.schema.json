@@ -78,6 +78,7 @@
           "items": {
             "type": "string",
             "enum": [
+              "Clean",
               "Compile",
               "InstallJava",
               "Pack",
@@ -111,6 +112,7 @@
           "items": {
             "type": "string",
             "enum": [
+              "Clean",
               "Compile",
               "InstallJava",
               "Pack",

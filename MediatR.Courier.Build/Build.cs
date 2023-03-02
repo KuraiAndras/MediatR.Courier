@@ -1,9 +1,13 @@
 ﻿using Nuke.Common;
 using Nuke.Common.CI;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using Nuke.Common.Utilities.Collections;
+using System.Linq;
+using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [ShutdownDotNetAfterServerBuild]
@@ -16,6 +20,16 @@ partial class Build : NukeBuild
 
     [Solution(GenerateProjects = true)] readonly Solution Solution;
     [GitVersion] readonly GitVersion GitVersion = default!;
+
+    AbsolutePath ArtifactsDirectory => Solution.Directory / "Artifacts";
+
+    Target Clean => _ => _
+        .Before(Restore)
+        .Executes(() =>
+        {
+            Solution.Directory.GlobDirectories("**/bin", "**/obj").Where(d => !d.ToString().Contains("Build")).ForEach(DeleteDirectory);
+            EnsureCleanDirectory(ArtifactsDirectory);
+        });
 
     Target Restore => _ => _
         .Executes(() => DotNetRestore(s => s
@@ -45,5 +59,6 @@ partial class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetNoBuild(true)
                 .SetNoRestore(true)
-                .SetVersion(GitVersion.NuGetVersionV2)));
+                .SetVersion(GitVersion.NuGetVersionV2)
+                .SetOutputDirectory(ArtifactsDirectory)));
 }

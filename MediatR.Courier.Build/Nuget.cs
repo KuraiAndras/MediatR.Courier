@@ -17,8 +17,7 @@ sealed partial class Build
         .Requires(() => NugetApiKey)
         .Requires(() => Configuration.Equals(Configuration.Release))
         .Executes(() =>
-            EnumerateFiles(Solution.Directory!, "*.nupkg", SearchOption.AllDirectories)
-                .Where(n => !n.EndsWith("symbols.nupkg"))
+            EnumerateFiles(ArtifactsDirectory, "*.nupkg", SearchOption.AllDirectories)
                 .SelectMany(x =>
                     DotNetNuGetPush(s => s
                         .SetTargetPath(x)
