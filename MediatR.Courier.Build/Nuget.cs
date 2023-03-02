@@ -15,7 +15,7 @@ sealed partial class Build
         .DependsOn(Compile)
         .Executes(() =>
             DotNetPack(s => s
-                .SetProject(Solution)
+                .SetProject(Solution.MediatR_Courier)
                 .SetConfiguration(Configuration)
                 .SetNoBuild(true)
                 .SetNoRestore(true)

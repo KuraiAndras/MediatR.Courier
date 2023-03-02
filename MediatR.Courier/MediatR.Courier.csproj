@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-    <IsPackable>true</IsPackable>
     <PackageId>MediatR.Courier</PackageId>
     <Description>
       A simple library to treat MediatR notifications sort of like events.
