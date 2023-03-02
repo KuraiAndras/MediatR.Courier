@@ -29,7 +29,9 @@ using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
 )]
 public partial class Build
 {
+    string JavaVersion { get; } = "17.0.2";
+
     Target InstallJava => _ => _
         .Before(SonarBegin)
-        .Executes(() => Chocolatey("install openjdk --version=17.0.2 --no-progress -y"));
+        .Executes(() => Chocolatey($"install openjdk --version={JavaVersion} --no-progress -y"));
 }
