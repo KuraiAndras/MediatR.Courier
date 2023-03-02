@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MediatR.Courier.DependencyInjection.Tests
+namespace MediatR.Courier.Tests
 {
     public class DependencyInjectionTests
     {
