@@ -9,7 +9,8 @@ using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
     OnPushTags = new[] { "*" },
     InvokedTargets = new[] { nameof(PushToNuGet) },
     ImportSecrets = new[] { nameof(NugetApiKey) },
-    EnableGitHubToken = true
+    EnableGitHubToken = true,
+    FetchDepth = 0
 )]
 [GitHubActions
 (
