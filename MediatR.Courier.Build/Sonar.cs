@@ -24,15 +24,15 @@ sealed partial class Build
             .SetProcessArgumentConfigurator(a => a.Add($"/o:\"{SonarOrganization}\""))
             .SetOpenCoverPaths("**/*.opencover.xml")
             .SetCoverageExclusions("**/*Example*/**")
-            .SetVersion(NugetVersion)));
+            .SetVersion(NugetVersion)
+            .SetProcessArgumentConfigurator(a => a.Add(@"/d:sonar.java.jdkHome=""C:\Program Files\OpenJDK"""))));
 
     Target SonarEnd => _ => _
         .DependsOn(SonarBegin)
         .DependsOn(Test)
         .Executes(() => SonarScannerEnd(s => s
             .SetFramework("net5.0")
-            .SetLogin(SonarToken)
-            .SetProcessArgumentConfigurator(a => a.Add(@"/d:sonar.java.jdkHome=""C:\Program Files\OpenJDK"""))));
+            .SetLogin(SonarToken)));
 
     Target RunCi => _ => _
         .DependsOn(SonarEnd)
