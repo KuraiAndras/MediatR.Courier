@@ -11,16 +11,6 @@ sealed partial class Build
     [Parameter] readonly string NugetApiUrl = "https://api.nuget.org/v3/index.json";
     [Parameter] readonly string NugetApiKey = string.Empty;
 
-    Target Pack => _ => _
-        .DependsOn(Compile)
-        .Executes(() =>
-            DotNetPack(s => s
-                .SetProject(Solution.MediatR_Courier)
-                .SetConfiguration(Configuration)
-                .SetNoBuild(true)
-                .SetNoRestore(true)
-                .SetVersion(NugetVersion)));
-
     Target PushToNuGet => _ => _
         .DependsOn(Pack)
         .Requires(() => NugetApiUrl)

@@ -1,12 +1,9 @@
 ﻿using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using System;
-using System.Linq;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [ShutdownDotNetAfterServerBuild]
@@ -18,21 +15,7 @@ partial class Build : NukeBuild
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution(GenerateProjects = true)] readonly Solution Solution;
-    [GitVersion] readonly GitVersion? GitVersion;
-    [PathExecutable] readonly Tool Git;
-
-    string TagVersion => Git.Invoke("describe --tags").First().Text ?? throw new InvalidOperationException("Cloud not get version from git");
-
-    string NugetVersion => GitVersion?.NuGetVersionV2 ?? TagVersion;
-    string AssemblyVersion => GitVersion?.AssemblySemVer ?? TagVersion;
-    string AssemblyFileVersion => GitVersion?.AssemblySemFileVer ?? TagVersion;
-    string InformationalVersion => GitVersion?.InformationalVersion ?? TagVersion;
-
-    Target Clean => _ => _
-        .Before(Restore)
-        .Executes(() =>
-        {
-        });
+    [GitVersion] readonly GitVersion GitVersion = default!;
 
     Target Restore => _ => _
         .Executes(() => DotNetRestore(s => s
@@ -43,9 +26,7 @@ partial class Build : NukeBuild
         .Executes(() => DotNetBuild(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
-            .SetAssemblyVersion(AssemblyVersion)
-            .SetFileVersion(AssemblyFileVersion)
-            .SetInformationalVersion(InformationalVersion)
+            .SetVersion(GitVersion.NuGetVersionV2)
             .EnableNoRestore()));
 
     Target Test => _ => _
@@ -54,7 +35,15 @@ partial class Build : NukeBuild
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
             .SetCollectCoverage(true)
-            .SetCoverletOutputFormat(CoverletOutputFormat.opencover)
-            .EnableNoRestore()
-            .EnableNoBuild()));
+            .SetCoverletOutputFormat(CoverletOutputFormat.opencover)));
+
+    Target Pack => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+            DotNetPack(s => s
+                .SetProject(Solution.MediatR_Courier)
+                .SetConfiguration(Configuration)
+                .SetNoBuild(true)
+                .SetNoRestore(true)
+                .SetVersion(GitVersion.NuGetVersionV2)));
 }

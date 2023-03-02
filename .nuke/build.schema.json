@@ -78,13 +78,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "Clean",
               "Compile",
               "InstallJava",
               "Pack",
               "PushToNuGet",
               "Restore",
-              "RunCi",
               "SonarBegin",
               "SonarEnd",
               "Test"
@@ -113,13 +111,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "Clean",
               "Compile",
               "InstallJava",
               "Pack",
               "PushToNuGet",
               "Restore",
-              "RunCi",
               "SonarBegin",
               "SonarEnd",
               "Test"

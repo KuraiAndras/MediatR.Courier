@@ -41,8 +41,8 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
-      - name: Run './build.cmd RunCi InstallJava'
-        run: ./build.cmd RunCi InstallJava
+      - name: Run './build.cmd Test SonarEnd InstallJava'
+        run: ./build.cmd Test SonarEnd InstallJava
         env:
           SonarHostUrl: ${{ secrets.SONAR_HOST_URL }}
           SonarProjectKey: ${{ secrets.SONAR_PROJECT_KEY }}

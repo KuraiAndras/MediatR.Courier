@@ -18,7 +18,7 @@ using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
     GitHubActionsImage.WindowsLatest,
     OnPullRequestBranches = new[] { "master", "develop" },
     OnPushBranches = new[] { "master", "develop" },
-    InvokedTargets = new[] { nameof(RunCi), nameof(InstallJava) },
+    InvokedTargets = new[] { nameof(Test), nameof(SonarEnd) ,nameof(InstallJava) },
     ImportSecrets = new[]
     {
         nameof(SonarHostUrl),
