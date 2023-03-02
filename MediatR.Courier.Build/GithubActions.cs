@@ -1,5 +1,6 @@
-﻿using Nuke.Common.CI.GitHubActions;
-
+﻿using Nuke.Common;
+using Nuke.Common.CI.GitHubActions;
+using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
 [GitHubActions
 (
     "Publish",
@@ -15,7 +16,7 @@
     GitHubActionsImage.WindowsLatest,
     OnPullRequestBranches = new[] { "master", "develop" },
     OnPushBranches = new[] { "master", "develop" },
-    InvokedTargets = new[] { nameof(RunCi) },
+    InvokedTargets = new[] { nameof(RunCi), nameof(InstallJava) },
     ImportSecrets = new[]
     {
         nameof(SonarHostUrl),
@@ -28,4 +29,7 @@
 )]
 public partial class Build
 {
+    Target InstallJava => _ => _
+        .Before(SonarBegin)
+        .Executes(() => Chocolatey("install openjdk --version=17.0.2 -y"));
 }
