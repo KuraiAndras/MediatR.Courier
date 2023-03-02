@@ -1,5 +1,6 @@
 ﻿using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
+using Serilog;
 using System;
 using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
 [GitHubActions
@@ -37,6 +38,9 @@ public partial class Build
         .Executes(() =>
         {
             Chocolatey($"install openjdk --version={JavaVersion} --no-progress -y");
-            Environment.SetEnvironmentVariable("JAVA_HOME", @$"C:\Program Files\OpenJDK\jdk-{JavaVersion}");
+
+            var javaHome = @$"C:\Program Files\OpenJDK\jdk-{JavaVersion}";
+            Log.Information("Setting java home to {javaHome}", javaHome);
+            Environment.SetEnvironmentVariable("JAVA_HOME", javaHome);
         });
 }
