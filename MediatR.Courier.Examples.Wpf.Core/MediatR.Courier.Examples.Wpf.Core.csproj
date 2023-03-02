@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediatR.Courier\MediatR.Courier.csproj" />
-    <ProjectReference Include="..\MediatR.Courier.Examples.Shared\MediatR.Courier.Examples.Shared.csproj" />
   </ItemGroup>
 
 </Project>
