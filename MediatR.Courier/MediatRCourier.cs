@@ -56,9 +56,7 @@ namespace MediatR.Courier
                 }
             }
 
-            if (notification is null) throw new ArgumentNullException(nameof(notification));
-
-            return HandleLocal(notification, cancellationToken);
+            return notification is null ? throw new ArgumentNullException(nameof(notification)) : HandleLocal(notification, cancellationToken);
         }
 
         public void Subscribe<TNotification>(Action<TNotification> handler)
@@ -164,12 +162,7 @@ namespace MediatR.Courier
 
             var remainingSubscribers = new ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>
             (
-                subscribers
-                    .Where(subscriber =>
-                    {
-                        if (subscriber.target.TryGetTarget(out var weakHandler)) return false;
-                        return weakHandler != handler.Target;
-                    })
+                subscribers.Where(subscriber => !subscriber.target.TryGetTarget(out var weakHandler) && weakHandler != handler.Target)
             );
 
             _weakActions.TryRemove(notificationType, out _);

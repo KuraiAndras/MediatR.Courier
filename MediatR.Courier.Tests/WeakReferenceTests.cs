@@ -53,7 +53,9 @@ namespace MediatR.Courier.Tests
 
             await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
 
+#pragma warning disable S1854 // Unused assignments should be removed
             handler = null;
+#pragma warning restore S1854 // Unused assignments should be removed
 
             // We wait for some time to make sure that the gc actually collects and runs
             await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);

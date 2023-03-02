@@ -48,7 +48,7 @@ namespace MediatR.Courier.Tests
 
             var receivedMessage = false;
 
-            void NotificationAction(TestNotification _, CancellationToken __) => receivedMessage = true;
+            void NotificationAction(TestNotification _) => receivedMessage = true;
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
@@ -85,7 +85,7 @@ namespace MediatR.Courier.Tests
 
             var receivedMessageCount = 0;
 
-            void NotificationAction(TestNotification _, CancellationToken __) => ++receivedMessageCount;
+            void NotificationAction(TestNotification _) => ++receivedMessageCount;
 
             mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
