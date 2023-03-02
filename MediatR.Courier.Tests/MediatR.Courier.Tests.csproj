@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediatR.Courier.TestResources\MediatR.Courier.TestResources.csproj" />
     <ProjectReference Include="..\MediatR.Courier\MediatR.Courier.csproj" />
   </ItemGroup>
 
