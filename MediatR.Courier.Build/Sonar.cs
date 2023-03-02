@@ -24,8 +24,7 @@ sealed partial class Build
             .SetProcessArgumentConfigurator(a => a.Add($"/o:\"{SonarOrganization}\""))
             .SetOpenCoverPaths("**/*.opencover.xml")
             .SetCoverageExclusions("**/*Example*/**")
-            .SetVersion(NugetVersion)
-            .SetProcessArgumentConfigurator(a => a.Add(@$"/d:sonar.java.jdkHome=""C:\Program Files\OpenJDK\jdk-{JavaVersion}"""))));
+            .SetVersion(NugetVersion)));
 
     Target SonarEnd => _ => _
         .DependsOn(SonarBegin)

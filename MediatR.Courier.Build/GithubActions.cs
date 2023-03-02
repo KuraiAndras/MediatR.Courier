@@ -1,5 +1,6 @@
 ﻿using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
+using System;
 using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
 [GitHubActions
 (
@@ -33,5 +34,9 @@ public partial class Build
 
     Target InstallJava => _ => _
         .Before(SonarBegin)
-        .Executes(() => Chocolatey($"install openjdk --version={JavaVersion} --no-progress -y"));
+        .Executes(() =>
+        {
+            Chocolatey($"install openjdk --version={JavaVersion} --no-progress -y");
+            Environment.SetEnvironmentVariable("JAVA_HOME", @$"C:\Program Files\OpenJDK\jdk-{JavaVersion}");
+        });
 }
