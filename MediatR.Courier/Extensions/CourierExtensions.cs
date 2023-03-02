@@ -41,10 +41,7 @@ namespace MediatR.Courier.Extensions
                         .Skip(1)
                         .SequenceEquivalent(methodGenericArguments
                             .Skip(1));
-                });
-
-            if (baseMethod is null) throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(courierMethodName)}");
-
+                }) ?? throw new MethodNotImplementedException($"{nameof(ICourier)} does not have a method named {nameof(courierMethodName)}");
             var subscribeMethod = baseMethod.MakeGenericMethod(methodGenericArguments[0]);
 
             subscribeMethod.Invoke(courier, new object[] { handlerDelegate });
