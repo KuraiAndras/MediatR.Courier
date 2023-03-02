@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace MediatR.Courier.DependencyInjection
+namespace MediatR.Courier
 {
     public static class CourierInjector
     {

@@ -10,7 +10,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -25,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediatR.Courier.DependencyInjection\MediatR.Courier.DependencyInjection.csproj" />
+    <ProjectReference Include="..\MediatR.Courier\MediatR.Courier.csproj" />
     <ProjectReference Include="..\MediatR.Courier.TestResources\MediatR.Courier.TestResources.csproj" />
   </ItemGroup>
 

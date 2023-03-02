@@ -8,7 +8,7 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
     /// <summary>
     /// Demonstrates modifying and querying some shared state. Call count could be replaced for example with a DbContext.
     /// </summary>
-    public sealed class ExampleRequestHandler : AsyncRequestHandler<IncrementCallCountCommand>, IRequestHandler<NotificationCountQuery, int>
+    public sealed class ExampleRequestHandler : IRequestHandler<IncrementCallCountCommand>, IRequestHandler<NotificationCountQuery, int>
     {
         private static readonly SemaphoreSlim Semaphore = new(1, 1);
         private static int _callCount;
@@ -28,7 +28,7 @@ namespace MediatR.Courier.Examples.Shared.RequestHandlers
             return response;
         }
 
-        protected override async Task Handle(IncrementCallCountCommand request, CancellationToken cancellationToken)
+        public async Task Handle(IncrementCallCountCommand request, CancellationToken cancellationToken)
         {
             await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 

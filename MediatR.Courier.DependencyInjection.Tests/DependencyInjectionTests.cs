@@ -51,7 +51,7 @@ namespace MediatR.Courier.DependencyInjection.Tests
         private static (IServiceProvider serviceProvider, IMediator mediator, ICourier courier) SetUpCourier()
         {
             var services = new ServiceCollection()
-                .AddMediatR(typeof(TestResourcesMarkerType))
+                .AddMediatR(c => c.RegisterServicesFromAssemblyContaining(typeof(TestResourcesMarkerType)))
                 .AddCourier(typeof(TestResourcesMarkerType).Assembly);
 
             var serviceProvider = services.BuildServiceProvider();
