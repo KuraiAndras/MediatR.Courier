@@ -31,7 +31,8 @@ sealed partial class Build
         .DependsOn(Test)
         .Executes(() => SonarScannerEnd(s => s
             .SetFramework("net5.0")
-            .SetLogin(SonarToken)));
+            .SetLogin(SonarToken)
+            .SetProcessArgumentConfigurator(a => a.Add(@"/d:sonar.java.jdkHome=C:\Program Files\OpenJDK"))));
 
     Target RunCi => _ => _
         .DependsOn(SonarEnd)

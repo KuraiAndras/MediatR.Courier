@@ -31,5 +31,5 @@ public partial class Build
 {
     Target InstallJava => _ => _
         .Before(SonarBegin)
-        .Executes(() => Chocolatey("install openjdk --version=17.0.2 -y"));
+        .Executes(() => Chocolatey("install openjdk --version=17.0.2 --no-progress -y"));
 }
