@@ -1,4 +1,4 @@
-# MediatR.Courier
+# MediatR.Courier [![Nuget](https://img.shields.io/nuget/v/MediatR.Courier)](https://www.nuget.org/packages/MediatR.Courier) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KuraiAndras_MediatR.Courier&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=KuraiAndras_MediatR.Courier) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=KuraiAndras_MediatR.Courier&metric=coverage)](https://sonarcloud.io/summary/new_code?id=KuraiAndras_MediatR.Courier)
 
 A simple library to treat MediatR notifications sort of like events.
 

@@ -33,4 +33,5 @@ jobs:
         run: ./build.cmd PushToNuGet
         env:
           NugetApiKey: ${{ secrets.NUGET_API_KEY }}
+          NugetApiUrl: ${{ secrets.NUGET_API_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
