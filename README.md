@@ -6,7 +6,50 @@ Main usage target is client applications.
 
 ## What does this solve?
 
-This library is aimed to provide help for clientside applications using the event aggregator pattern.
+This library is aimed to provide help for client-side applications using the event aggregator pattern with MediatR.
+
+## Usage
+
+Install form [NuGet](https://www.nuget.org/packages/MediatR.Courier/)
+
+Basic usage:
+
+```c#
+services
+    .AddMediatR(c => c.RegisterServicesFromAssemblyContaining(typeof(MyType)))
+    .AddCourier(typeof(MyType).Assembly);
+
+ICourier _courier;
+
+void SubscribeToCourier()
+{
+    // Subscribe to a specific notification type your want to receive.
+    _courier.Subscribe<ExampleNotification>(HandleNotification)
+}
+
+void HandleNotification(ExampleNotification notification, CancellationToken cancellationToken)
+{
+    //Do your handling logic here.
+    Console.WriteLine("ExampleNotification handled");
+}
+
+void UnsubscribeFromCourier()
+{
+    // Unsubscribe with the same delegate you subscribed with, just like with events.
+    _courier.UnSubscribe(HandleNotification);
+}
+
+// Somewhere else.
+
+private readonly IMediator _mediator;
+
+async Task FireNotification()
+{
+    // Somewhere some class publishes a notification with the mediator.
+    // Courier is just a specialized INotificationHandler<INotification> implementation.
+    await _mediator.Publish(new ExampleNotification());
+}
+```
 
 ### Main concepts:
 
@@ -110,7 +153,13 @@ In the same way as using MediatR can be thought of as replacing business layer s
 
 ### Weak references
 
-You can create a weak subscription by using the `SubscribeWeak` method. This subscription uses a `WeakReference` which will let the subscriber to be garbage collected without the need to unsubscribe (although you still can unsubscribe manually). Subscribing methods on `MonoBehavior` instances might result in unexpected behavior, so you should be careful with it
+You can create a weak subscription by using the `SubscribeWeak` method. This subscription uses a `WeakReference` which will let the subscriber to be garbage collected without the need to unsubscribe (although you still can unsubscribe manually). Subscribing methods on `MonoBehavior` instances in Unity3D might result in unexpected behavior, so you should be careful with it.
+
+```c#
+courier.SubscribeWeak<MyNotification>(notification => /*...*/);
+
+courier.SubscribeWeak<MyNotification>((notification, cancellation) => /*...*/);
+```
 
 ### Capturing thread context
 
@@ -120,45 +169,3 @@ You can configure how the Courier awaits the sent notifications. To change the b
 
 * No ordering is guaranteed when calling the subscribed methods
 * Async void methods are not awaited.
-
-## Usage
-
-Install form [nuget](https://www.nuget.org/packages/MediatR.Courier/)
-Microsoft.Extensions.DependencyInjection helper on [nuget](https://www.nuget.org/packages/MediatR.Courier.DependencyInjection/)
-
-Basic usage:
-
-```c#
-ICourier _courier;
-
-void SubscribeToCourier()
-{
-    // Subscribe to a specific notification type your want to receive.
-    _courier.Subscribe<ExampleNotification>(HandleNotification)
-}
-
-void HandleNotification(ExampleNotification notification, CancellationToken cancellationToken)
-{
-    //Do your handling logic here.
-    Console.WriteLine("ExampleNotification handled");
-}
-
-void UnsubscribeFromCourier()
-{
-    // Unsubscribe with the same delegate you subscribed with, just like with events.
-    _courier.UnSubscribe(HandleNotification);
-}
-
-// Somewhere else.
-
-private readonly IMediator _mediator;
-
-async Task FireNotification()
-{
-    // Somewhere some class publishes a notification with the mediator.
-    // Courier is just a specialized INotificationHandler<INotification> implementation.
-    await _mediator.Publish(new ExampleNotification());
-}
-```
-
-To register Courier to MediatR the simplest solution is using dependency injection and registering Courier with the provided dependency injection package
