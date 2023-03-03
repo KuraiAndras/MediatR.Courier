@@ -1,28 +1,26 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace MediatR.Courier.Exceptions
+namespace MediatR.Courier.Exceptions;
+
+[Serializable]
+public class UnknownMethodException : Exception
 {
-    [Serializable]
-    public class UnknownMethodException : Exception
+    public UnknownMethodException()
     {
-        public UnknownMethodException()
-        {
-        }
+    }
 
-        public UnknownMethodException(string message)
-            : base(message)
-        {
-        }
+    public UnknownMethodException(string message)
+        : base(message)
+    {
+    }
 
-        public UnknownMethodException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public UnknownMethodException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
-        protected UnknownMethodException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected UnknownMethodException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

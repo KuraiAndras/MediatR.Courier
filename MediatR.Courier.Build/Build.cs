@@ -1,12 +1,12 @@
 ﻿using Nuke.Common;
 using Nuke.Common.CI;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using System;
-using System.Linq;
+using Nuke.Common.Utilities.Collections;
+using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [ShutdownDotNetAfterServerBuild]
@@ -17,21 +17,17 @@ partial class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Solution] readonly Solution Solution;
-    [GitVersion] readonly GitVersion? GitVersion;
-    [PathExecutable] readonly Tool Git;
+    [Solution(GenerateProjects = true)] readonly Solution Solution;
+    [GitVersion] readonly GitVersion GitVersion = default!;
 
-    string TagVersion => Git.Invoke("describe --tags").First().Text ?? throw new InvalidOperationException("Cloud not get version from git");
-
-    string NugetVersion => GitVersion?.NuGetVersionV2 ?? TagVersion;
-    string AssemblyVersion => GitVersion?.AssemblySemVer ?? TagVersion;
-    string AssemblyFileVersion => GitVersion?.AssemblySemFileVer ?? TagVersion;
-    string InformationalVersion => GitVersion?.InformationalVersion ?? TagVersion;
+    AbsolutePath ArtifactsDirectory => Solution.Directory / "Artifacts";
 
     Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
         {
+            Solution.Directory.GlobDirectories("**/bin", "**/obj").Where(d => !d.ToString().Contains("Build")).ForEach(DeleteDirectory);
+            EnsureCleanDirectory(ArtifactsDirectory);
         });
 
     Target Restore => _ => _
@@ -43,9 +39,7 @@ partial class Build : NukeBuild
         .Executes(() => DotNetBuild(s => s
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
-            .SetAssemblyVersion(AssemblyVersion)
-            .SetFileVersion(AssemblyFileVersion)
-            .SetInformationalVersion(InformationalVersion)
+            .SetVersion(GitVersion.NuGetVersionV2)
             .EnableNoRestore()));
 
     Target Test => _ => _
@@ -54,7 +48,16 @@ partial class Build : NukeBuild
             .SetProjectFile(Solution)
             .SetConfiguration(Configuration)
             .SetCollectCoverage(true)
-            .SetCoverletOutputFormat(CoverletOutputFormat.opencover)
-            .EnableNoRestore()
-            .EnableNoBuild()));
+            .SetCoverletOutputFormat(CoverletOutputFormat.opencover)));
+
+    Target Pack => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+            DotNetPack(s => s
+                .SetProject(Solution.MediatR_Courier)
+                .SetConfiguration(Configuration)
+                .SetNoBuild(true)
+                .SetNoRestore(true)
+                .SetVersion(GitVersion.NuGetVersionV2)
+                .SetOutputDirectory(ArtifactsDirectory)));
 }

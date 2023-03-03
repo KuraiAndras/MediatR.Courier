@@ -1,8 +1,7 @@
 ﻿using System.Windows;
 
-namespace MediatR.Courier.Examples.Wpf.Core
+namespace MediatR.Courier.Examples.Wpf.Core;
+
+public partial class App : Application
 {
-    public partial class App : Application
-    {
-    }
 }

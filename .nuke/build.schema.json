@@ -29,6 +29,7 @@
             "AppVeyor",
             "AzurePipelines",
             "Bamboo",
+            "Bitbucket",
             "Bitrise",
             "GitHubActions",
             "GitLab",
@@ -79,10 +80,10 @@
             "enum": [
               "Clean",
               "Compile",
+              "InstallJava",
               "Pack",
               "PushToNuGet",
               "Restore",
-              "RunCi",
               "SonarBegin",
               "SonarEnd",
               "Test"
@@ -113,10 +114,10 @@
             "enum": [
               "Clean",
               "Compile",
+              "InstallJava",
               "Pack",
               "PushToNuGet",
               "Restore",
-              "RunCi",
               "SonarBegin",
               "SonarEnd",
               "Test"
