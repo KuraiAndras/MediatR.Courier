@@ -8,7 +8,7 @@ using static Nuke.Common.Tools.Chocolatey.ChocolateyTasks;
     GitHubActionsImage.WindowsLatest,
     OnPushTags = new[] { "*" },
     InvokedTargets = new[] { nameof(PushToNuGet) },
-    ImportSecrets = new[] { nameof(NugetApiKey) },
+    ImportSecrets = new[] { nameof(NugetApiKey), nameof(NugetApiUrl) },
     EnableGitHubToken = true,
     FetchDepth = 0,
     CacheIncludePatterns = new string[0],
