@@ -2,18 +2,16 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediatR.Courier.DependencyInjection\MediatR.Courier.DependencyInjection.csproj" />
-    <ProjectReference Include="..\MediatR.Courier.Examples.Shared\MediatR.Courier.Examples.Shared.csproj" />
+    <ProjectReference Include="..\MediatR.Courier\MediatR.Courier.csproj" />
   </ItemGroup>
 
 </Project>

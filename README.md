@@ -6,7 +6,50 @@ Main usage target is client applications.
 
 ## What does this solve?
 
-This library is aimed to provide help for clientside applications using the event aggregator pattern.
+This library is aimed to provide help for client-side applications using the event aggregator pattern with MediatR.
+
+## Usage
+
+Install form [NuGet](https://www.nuget.org/packages/MediatR.Courier/)
+
+Basic usage:
+
+```c#
+services
+    .AddMediatR(c => c.RegisterServicesFromAssemblyContaining(typeof(MyType)))
+    .AddCourier(typeof(MyType).Assembly);
+
+ICourier _courier;
+
+void SubscribeToCourier()
+{
+    // Subscribe to a specific notification type your want to receive.
+    _courier.Subscribe<ExampleNotification>(HandleNotification)
+}
+
+void HandleNotification(ExampleNotification notification, CancellationToken cancellationToken)
+{
+    //Do your handling logic here.
+    Console.WriteLine("ExampleNotification handled");
+}
+
+void UnsubscribeFromCourier()
+{
+    // Unsubscribe with the same delegate you subscribed with, just like with events.
+    _courier.UnSubscribe(HandleNotification);
+}
+
+// Somewhere else.
+
+private readonly IMediator _mediator;
+
+async Task FireNotification()
+{
+    // Somewhere some class publishes a notification with the mediator.
+    // Courier is just a specialized INotificationHandler<INotification> implementation.
+    await _mediator.Publish(new ExampleNotification());
+}
+```
 
 ### Main concepts:
 
@@ -110,134 +153,19 @@ In the same way as using MediatR can be thought of as replacing business layer s
 
 ### Weak references
 
-You can create a weak subscription by using the `SubscribeWeak` method. This subscription uses a `WeakReference` which will let the subscriber to be garbage collected without the need to unsubscribe (although you still can unsubscribe manually). Subscribing methods on `MonoBehavior` instances might result in unexpected behavior, so you should be careful with it
+You can create a weak subscription by using the `SubscribeWeak` method. This subscription uses a `WeakReference` which will let the subscriber to be garbage collected without the need to unsubscribe (although you still can unsubscribe manually). Subscribing methods on `MonoBehavior` instances in Unity3D might result in unexpected behavior, so you should be careful with it.
+
+```c#
+courier.SubscribeWeak<MyNotification>(notification => /*...*/);
+
+courier.SubscribeWeak<MyNotification>((notification, cancellation) => /*...*/);
+```
 
 ### Capturing thread context
 
 You can configure how the Courier awaits the sent notifications. To change the behavior modify the `CaptureThreadContext` property on the `CourierOptions` class. When using dependency injection, you can change this behavior during runtime, because the `CourierOptions` is accessible through DI.
 
-### Extras
-To make subscribing and unsubscribing from events easier this library provides two helper classes to help you do your registrations:
-
-* CourierInterfaceClient
-* CourierConventionClient
-
-If your inherit from these classes all you have to do is implement your handlers as public methods, and the base class handles the subscription of each method in the constructor, and unsubscribes them when calling Dispose.
-
-The interface client registers implementations of the ICourierNotificationHandler, while the convention client register methods using a simple convention. It will register your methods if they:
-* Return void.
-* Either: have one parameter which implements INotification.
-* Or: two parameters, the first implements INotification, and the second one is CancellationToken.
-
-Any other method is not subscribed to the Courier.
-
-Using interfaces:
-```c#
-public sealed class EventHandlerExample :
-CourierInterfaceClient,
-ICourierNotificationHandler<TestNotification>,
-ICourierNotificationHandler<TestNotification2>
-    {
-        public EventHandlerExample(ICourier courier) : base(courier)
-        {
-        }
-
-        public bool MessageReceived { get; private set; }
-        public bool MessageReceived2 { get; private set; }
-
-        public void Handle(TestNotification notification, CancellationToken cancellationToken = default)
-        {
-            MessageReceived = true;
-        }
-
-        public void Handle(TestNotification2 notification, CancellationToken cancellationToken = default)
-        {
-            MessageReceived2 = true;
-        }
-    }
-```
-
-Using convention:
-```c#
-public sealed class EventHandlerExample : CourierConventionClient
-    {
-        public EventHandlerExample(ICourier courier) : base(courier)
-        {
-        }
-
-        // Called
-        public void Handle(TestNotification _) => MessageReceivedCount++;
-        // Called
-        public void Handle(TestNotification _, CancellationToken __) => MessageReceivedCount++;
-        // Called
-        public void HandleOptional(TestNotification _ = default) => MessageReceivedCount++;
-        // Called
-        public void HandleOptional2(TestNotification _, CancellationToken __ = default) => MessageReceivedCount++;
-        // Called
-        public void HandleOptional3(TestNotification _ = default, CancellationToken __ = default) => MessageReceivedCount++;
-        // Not Called
-        public void Handle(TestNotification _, CancellationToken __, TestConventionClient1Cancellation ___) => MessageReceivedCount++;
-        // Not Called
-        public int HandleReturnsInt(TestNotification _) => MessageReceivedCount++;
-
-        // Called, Handlers which return Task are awaited
-        public async Task HandleAsync(TestNotification _)
-        {
-            await Task.Delay(100);
-            MessageReceivedCOunt++;
-        }
-
-        // Called, Handlers which return Task are awaited
-        public Task HandleAsync(TestNotification _, CancellationToken __)
-        {
-            await Task.Delay(100);
-            MessageReceivedCOunt++;
-        }
-    }
-```
 ## Gotchas
 
 * No ordering is guaranteed when calling the subscribed methods
 * Async void methods are not awaited.
-
-## Usage
-
-Install form [nuget](https://www.nuget.org/packages/MediatR.Courier/)
-Microsoft.Extensions.DependencyInjection helper on [nuget](https://www.nuget.org/packages/MediatR.Courier.DependencyInjection/)
-
-Basic usage:
-
-```c#
-ICourier _courier;
-
-void SubscribeToCourier()
-{
-    // Subscribe to a specific notification type your want to receive.
-    _courier.Subscribe<ExampleNotification>(HandleNotification)
-}
-
-void HandleNotification(ExampleNotification notification, CancellationToken cancellationToken)
-{
-    //Do your handling logic here.
-    Console.WriteLine("ExampleNotification handled");
-}
-
-void UnsubscribeFromCourier()
-{
-    // Unsubscribe with the same delegate you subscribed with, just like with events.
-    _courier.UnSubscribe(HandleNotification);
-}
-
-// Somewhere else.
-
-private readonly IMediator _mediator;
-
-async Task FireNotification()
-{
-    // Somewhere some class publishes a notification with the mediator.
-    // Courier is just a specialized INotificationHandler<INotification> implementation.
-    await _mediator.Publish(new ExampleNotification());
-}
-```
-
-To register Courier to MediatR the simplest solution is using dependency injection and registering Courier with the provided dependency injection package

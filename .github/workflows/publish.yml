@@ -26,17 +26,11 @@ jobs:
     name: windows-latest
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Cache .nuke/temp, ~/.nuget/packages
-        uses: actions/cache@v2
+      - uses: actions/checkout@v3
         with:
-          path: |
-            .nuke/temp
-            ~/.nuget/packages
-          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
+          fetch-depth: 0
       - name: Run './build.cmd PushToNuGet'
         run: ./build.cmd PushToNuGet
         env:
           NugetApiKey: ${{ secrets.NUGET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_CONTEXT: ${{ toJSON(github) }}

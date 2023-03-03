@@ -1,19 +1,17 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MediatR.Courier.Examples.Wpf.Core.View
+namespace MediatR.Courier.Examples.Wpf.Core.View;
+
+public sealed partial class MainControl
 {
-    public sealed partial class MainControl
+    public MainControl() => InitializeComponent();
+
+    protected override void OnInitialized(EventArgs e)
     {
-        public MainControl() => InitializeComponent();
+        base.OnInitialized(e);
 
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
-
-            ViewModel.InitializeAsync();
-        }
-
-        private void IncrementClicked(object sender, RoutedEventArgs e) => ViewModel.IncrementNotificationCountAsync();
+        ViewModel.InitializeAsync();
     }
+
+    private void IncrementClicked(object sender, RoutedEventArgs e) => ViewModel.IncrementNotificationCountAsync();
 }
