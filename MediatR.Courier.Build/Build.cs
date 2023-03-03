@@ -59,6 +59,5 @@ partial class Build : NukeBuild
                 .SetNoBuild(true)
                 .SetNoRestore(true)
                 .SetVersion(GitVersion.NuGetVersionV2)
-                .SetOutputDirectory(ArtifactsDirectory)
-                .SetPackageReleaseNotes(File.ReadAllText(Solution.Directory / "CHANGELOG.md"))));
+                .SetOutputDirectory(ArtifactsDirectory)));
 }

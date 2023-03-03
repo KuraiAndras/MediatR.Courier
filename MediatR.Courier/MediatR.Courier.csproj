@@ -9,6 +9,7 @@
       Main usage target is client applications.
     </Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../CHANGELOG.md"))</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
