@@ -12,7 +12,6 @@ sealed partial class Build
         .DependsOn(Pack)
         .Requires(() => NugetApiUrl)
         .Requires(() => NugetApiKey)
-        .Requires(() => Configuration.Equals(Configuration.Release))
         .Executes(() =>
             EnumerateFiles(ArtifactsDirectory, "*.nupkg", SearchOption.AllDirectories)
                 .SelectMany(x =>
