@@ -47,7 +47,7 @@ public sealed class MediatRCourier : ICourier, INotificationHandler<INotificatio
                     ? new object[] { n, c }
                     : new object[] { n };
 
-                var result = action.DynamicInvoke(parameters);
+                var result = action.Method.Invoke(action.Target, parameters);
                 if (result is Task task) await task.ConfigureAwait(_options.CaptureThreadContext);
             }
         }
