@@ -37,6 +37,31 @@ public sealed class WeakReferenceTests
     }
 
     [Fact]
+    public async Task UnSubscribedAsyncActionNotInvokedButOthersAre()
+    {
+        var mediatRCourier = new MediatRCourier(new());
+
+        var handler = new Handler(new(), new());
+        var handler2 = new Handler(new(), new());
+
+        mediatRCourier.SubscribeWeak<TestNotification>(handler.NotificationAction);
+        mediatRCourier.SubscribeWeak<TestNotification>(handler.NotificationAction2);
+        mediatRCourier.SubscribeWeak<TestNotification>(handler2.NotificationAction);
+        mediatRCourier.SubscribeWeak<TestNotification>(handler2.NotificationAction2);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        mediatRCourier.UnSubscribe<TestNotification>(handler.NotificationAction);
+
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+
+        Assert.Equal(1, handler.ReceivedMessageCount);
+        Assert.Equal(2, handler.ReceivedMessageCount2);
+        Assert.Equal(2, handler2.ReceivedMessageCount);
+        Assert.Equal(2, handler2.ReceivedMessageCount2);
+    }
+
+    [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1215:\"GC.Collect\" should not be called", Justification = "We want to test behavior around GC collection")]
     public async Task CollectedReferenceIsNotInvoked()
     {
@@ -70,8 +95,13 @@ public sealed class WeakReferenceTests
     private sealed class Handler
     {
         private readonly Counter _counter;
+        private readonly Counter? _counter2;
 
-        public Handler(Counter counter) => _counter = counter;
+        public Handler(Counter counter, Counter? counter2 = null)
+        {
+            _counter = counter;
+            _counter2 = counter2;
+        }
 
 #pragma warning disable S1172 // Unused method parameters should be removed
         public async Task NotificationAction(TestNotification _, CancellationToken cancellationToken)
@@ -82,6 +112,18 @@ public sealed class WeakReferenceTests
             await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
         }
 
+#pragma warning disable S1172 // Unused method parameters should be removed
+        public async Task NotificationAction2(TestNotification _, CancellationToken cancellationToken)
+#pragma warning restore S1172 // Unused method parameters should be removed
+        {
+            if (_counter2 is null) return;
+
+            _counter2.ReceivedMessageCount++;
+
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
+        }
+
         public int ReceivedMessageCount => _counter.ReceivedMessageCount;
+        public int? ReceivedMessageCount2 => _counter2?.ReceivedMessageCount;
     }
 }
