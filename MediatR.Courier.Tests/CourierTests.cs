@@ -119,6 +119,68 @@ public sealed class CourierTests
         Assert.True(receivedMessageCount == 1);
     }
 
+    [Fact]
+    public async Task Handlers_RunInParallel_WhenUseTaskWhenAllIsTrue()
+    {
+        var options = new CourierOptions { UseTaskWhenAll = true };
+        var mediatRCourier = new MediatRCourier(options);
+
+        var delays = new[] { 100, 200, 300 };
+        var started = new bool[delays.Length];
+        var completed = new bool[delays.Length];
+
+        for (int i = 0; i < delays.Length; i++)
+        {
+            int idx = i;
+            mediatRCourier.Subscribe<TestNotification>(async (_, ct) =>
+            {
+                started[idx] = true;
+                await Task.Delay(delays[idx], ct);
+                completed[idx] = true;
+            });
+        }
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
+        sw.Stop();
+
+        Assert.All(started, Assert.True);
+        Assert.All(completed, Assert.True);
+        // Should complete in just over the max delay (parallel)
+        Assert.InRange(sw.ElapsedMilliseconds, delays.Max(), delays.Max() + 150);
+    }
+
+    [Fact]
+    public async Task Handlers_RunSequentially_WhenUseTaskWhenAllIsFalse()
+    {
+        var options = new CourierOptions { CaptureThreadContext = false, UseTaskWhenAll = false };
+        var mediatRCourier = new MediatRCourier(options);
+
+        var delays = new[] { 100, 200, 300 };
+        var started = new bool[delays.Length];
+        var completed = new bool[delays.Length];
+
+        for (int i = 0; i < delays.Length; i++)
+        {
+            int idx = i;
+            mediatRCourier.Subscribe<TestNotification>(async (_, ct) =>
+            {
+                started[idx] = true;
+                await Task.Delay(delays[idx], ct);
+                completed[idx] = true;
+            });
+        }
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
+        sw.Stop();
+
+        Assert.All(started, s => Assert.True(s));
+        Assert.All(completed, c => Assert.True(c));
+        // Should complete in just over the sum of delays (sequential)
+        Assert.InRange(sw.ElapsedMilliseconds, delays.Sum(), delays.Sum() + 150);
+    }
+
     private sealed class AsyncTestData : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
