@@ -35,7 +35,11 @@ jobs:
           /k:"KuraiAndras_MediatR.Courier" `
           /o:"kuraiandras" `
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-          /d:sonar.host.url="https://sonarcloud.io"
+          /d:sonar.host.url="https://sonarcloud.io" `
+          /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml `
+          /d:sonar.cs.vstest.reportsPaths="**/*.trx" `
+          /d:sonar.scanner.scanAll=false `
+          /d:sonar.coverage.exclusions="MediatR.Courier.Examples.Wpf.Core/**/*.cs" `
 
       - name: Restore NuGet packages
         run: dotnet restore
@@ -44,7 +48,7 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Run Tests
-        run: dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: dotnet test --no-build --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
       - name: Sonar End
         run: dotnet dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
