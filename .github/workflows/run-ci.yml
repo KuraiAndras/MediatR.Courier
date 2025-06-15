@@ -31,10 +31,10 @@ jobs:
 
       - name: Sonar Begin
         run: |
-          dotnet dotnet-sonarscanner begin \
-          /k:"KuraiAndras_MediatR.Courier" \
-          /o:"kuraiandras" \
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+          dotnet dotnet-sonarscanner begin `
+          /k:"KuraiAndras_MediatR.Courier" `
+          /o:"kuraiandras" `
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
           /d:sonar.host.url="https://sonarcloud.io"
 
       - name: Restore NuGet packages
