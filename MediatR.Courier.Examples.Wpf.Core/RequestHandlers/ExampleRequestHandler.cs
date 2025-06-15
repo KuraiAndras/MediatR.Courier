@@ -1,7 +1,7 @@
-﻿using MediatR.Courier.Examples.Shared.Notifications;
-using MediatR.Courier.Examples.Shared.Requests;
+﻿using MediatR.Courier.Examples.Wpf.Core.Notifications;
+using MediatR.Courier.Examples.Wpf.Core.Requests;
 
-namespace MediatR.Courier.Examples.Shared.RequestHandlers;
+namespace MediatR.Courier.Examples.Wpf.Core.RequestHandlers;
 
 /// <summary>
 /// Demonstrates modifying and querying some shared state. Call count could be replaced for example with a DbContext.
