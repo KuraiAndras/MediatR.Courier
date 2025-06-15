@@ -1,3 +1,7 @@
+# 7.0.0
+- Removed Nuke
+- Updated to .NET 8
+
 # 6.0.0
 - Update MediatR to version 12
 - Deprecate DI package
