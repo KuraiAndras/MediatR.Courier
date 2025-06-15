@@ -4,6 +4,7 @@
 - Fixed sonarcloud
 - Removed old azure devops pipelines
 - Pipelines now fully written in github actions
+- Updated dependencies
 
 # 6.0.0
 - Update MediatR to version 12
