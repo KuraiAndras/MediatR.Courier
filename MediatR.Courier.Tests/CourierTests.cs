@@ -91,7 +91,7 @@ public sealed class CourierTests
 
         await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
-        Assert.True(receivedMessageCount == 1);
+        Assert.Equal(1, receivedMessageCount);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public sealed class CourierTests
 
         await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
-        Assert.True(receivedMessageCount == 1);
+        Assert.Equal(1, receivedMessageCount);
     }
 
     private sealed class AsyncTestData : IEnumerable<object[]>
