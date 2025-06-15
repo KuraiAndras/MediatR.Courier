@@ -5,6 +5,7 @@
 - Removed old azure devops pipelines
 - Pipelines now fully written in github actions
 - Updated dependencies
+- Added documentation comments to `ICourier`, `CourierInjector` and `CourierOptions`
 
 # 6.0.0
 - Update MediatR to version 12
