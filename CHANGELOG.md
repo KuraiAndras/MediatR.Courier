@@ -1,4 +1,5 @@
 # vNext
+- Fix bug where RemoveWeak would sometimes remove too many handlers
 - Use Invoke iso DynamicInvoke for better performance
 
 # 7.0.0
