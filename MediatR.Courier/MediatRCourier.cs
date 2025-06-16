@@ -158,7 +158,9 @@ public sealed class MediatRCourier : ICourier, INotificationHandler<INotificatio
 
         var remainingSubscribers = new ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>
         (
-            subscribers.Where(subscriber => !subscriber.target.TryGetTarget(out var weakHandler) && weakHandler != handler.Target)
+            subscribers.Where(subscriber =>
+                (subscriber.target.TryGetTarget(out var weakHandler) && weakHandler != handler.Target)
+                || subscriber.methodInfo != handler.Method)
         );
 
         _weakActions.TryRemove(notificationType, out _);
