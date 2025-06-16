@@ -1,4 +1,4 @@
-﻿using MediatR.Courier.TestResources;
+﻿using MediatR.Courier.Tests.TestResources;
 
 namespace MediatR.Courier.Tests;
 
@@ -13,7 +13,7 @@ public sealed class WeakReferenceTests
 
         mediatRCourier.SubscribeWeak<TestNotification>(handler.NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.Equal(1, handler.ReceivedMessageCount);
     }
@@ -27,11 +27,11 @@ public sealed class WeakReferenceTests
 
         mediatRCourier.SubscribeWeak<TestNotification>(handler.NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         mediatRCourier.UnSubscribe<TestNotification>(handler.NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.Equal(1, handler.ReceivedMessageCount);
     }
@@ -49,11 +49,11 @@ public sealed class WeakReferenceTests
         mediatRCourier.SubscribeWeak<TestNotification>(handler2.NotificationAction);
         mediatRCourier.SubscribeWeak<TestNotification>(handler2.NotificationAction2);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         mediatRCourier.UnSubscribe<TestNotification>(handler.NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.Equal(1, handler.ReceivedMessageCount);
         Assert.Equal(2, handler.ReceivedMessageCount2);
@@ -63,6 +63,7 @@ public sealed class WeakReferenceTests
 
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1215:\"GC.Collect\" should not be called", Justification = "We want to test behavior around GC collection")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "False positive")]
     public async Task CollectedReferenceIsNotInvoked()
     {
         var mediatRCourier = new MediatRCourier(new());
@@ -72,17 +73,17 @@ public sealed class WeakReferenceTests
 
         mediatRCourier.SubscribeWeak<TestNotification>(handler.NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
 #pragma warning disable S1854 // Unused assignments should be removed
         handler = null;
 #pragma warning restore S1854 // Unused assignments should be removed
 
         // We wait for some time to make sure that the gc actually collects and runs
-        await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+        await Task.Delay(TimeSpan.FromSeconds(1));
         GC.Collect(2, GCCollectionMode.Forced, true);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.Equal(1, counter.ReceivedMessageCount);
     }
@@ -109,7 +110,7 @@ public sealed class WeakReferenceTests
         {
             _counter.ReceivedMessageCount++;
 
-            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
         }
 
 #pragma warning disable S1172 // Unused method parameters should be removed

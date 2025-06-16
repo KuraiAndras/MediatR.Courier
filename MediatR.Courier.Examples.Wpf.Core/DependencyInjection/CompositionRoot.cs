@@ -1,5 +1,4 @@
-﻿using MediatR.Courier.Examples.Shared;
-using MediatR.Courier.Examples.Wpf.Core.ViewModels;
+﻿using MediatR.Courier.Examples.Wpf.Core.ViewModels;
 
 using Microsoft.Extensions.DependencyInjection;
 
