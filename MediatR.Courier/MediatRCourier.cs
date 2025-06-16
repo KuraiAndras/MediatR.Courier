@@ -72,7 +72,7 @@ public sealed class MediatRCourier : ICourier, INotificationHandler<INotificatio
                 }
             }
 
-            if (_options.UseTaskWhenAll && tasks.Count > 0)
+            if (tasks.Count > 0)
             {
                 await Task.WhenAll(tasks).ConfigureAwait(_options.CaptureThreadContext);
             }
