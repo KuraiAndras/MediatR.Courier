@@ -22,6 +22,7 @@ public sealed class MediatRCourier : ICourier, INotificationHandler<INotificatio
             if (!_weakActions.TryGetValue(notificationType, out var weakSubscribers)) weakSubscribers = new();
 
             var remainingSubscribers = new ConcurrentBag<(WeakReference<object> target, MethodInfo methodInfo, bool needsToken)>();
+            var tasks = new List<Task>();
 
             foreach (var (target, methodInfo, needsToken) in weakSubscribers)
             {
@@ -32,7 +33,17 @@ public sealed class MediatRCourier : ICourier, INotificationHandler<INotificatio
                         : new object[] { n };
 
                     var result = methodInfo.Invoke(handler, parameters);
-                    if (result is Task task) await task.ConfigureAwait(_options.CaptureThreadContext);
+                    if (result is Task task)
+                    {
+                        if (_options.UseTaskWhenAll)
+                        {
+                            tasks.Add(task);
+                        }
+                        else
+                        {
+                            await task.ConfigureAwait(_options.CaptureThreadContext);
+                        }
+                    }
 
                     remainingSubscribers.Add((target, methodInfo, needsToken));
                 }
@@ -48,7 +59,22 @@ public sealed class MediatRCourier : ICourier, INotificationHandler<INotificatio
                     : new object[] { n };
 
                 var result = action.Method.Invoke(action.Target, parameters);
-                if (result is Task task) await task.ConfigureAwait(_options.CaptureThreadContext);
+                if (result is Task task)
+                {
+                    if (_options.UseTaskWhenAll)
+                    {
+                        tasks.Add(task);
+                    }
+                    else
+                    {
+                        await task.ConfigureAwait(_options.CaptureThreadContext);
+                    }
+                }
+            }
+
+            if (_options.UseTaskWhenAll && tasks.Count > 0)
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(_options.CaptureThreadContext);
             }
         }
 
