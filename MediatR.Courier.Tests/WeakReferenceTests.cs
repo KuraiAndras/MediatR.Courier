@@ -49,11 +49,11 @@ public sealed class WeakReferenceTests
         mediatRCourier.SubscribeWeak<TestNotification>(handler2.NotificationAction);
         mediatRCourier.SubscribeWeak<TestNotification>(handler2.NotificationAction2);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         mediatRCourier.UnSubscribe<TestNotification>(handler.NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.Equal(1, handler.ReceivedMessageCount);
         Assert.Equal(2, handler.ReceivedMessageCount2);
