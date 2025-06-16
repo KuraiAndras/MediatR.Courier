@@ -154,9 +154,13 @@ In the same way as using MediatR can be thought of as replacing business layer s
 ### Weak references
 
 You can create a weak subscription by using the `SubscribeWeak` method. This subscription uses a `WeakReference` which will let the subscriber to be garbage collected without the need to unsubscribe (although you still can unsubscribe manually). Subscribing methods on `MonoBehavior` instances in Unity3D might result in unexpected behavior, so you should be careful with it.
+
+```c#
 courier.SubscribeWeak<MyNotification>(notification => /*...*/);
 
 courier.SubscribeWeak<MyNotification>((notification, cancellation) => /*...*/);
+```
+
 ### Capturing thread context
 
 You can configure how the Courier awaits the sent notifications. To change the behavior modify the `CaptureThreadContext` property on the `CourierOptions` class. When using dependency injection, you can change this behavior during runtime, because the `CourierOptions` is accessible through DI.
