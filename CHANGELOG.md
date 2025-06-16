@@ -1,7 +1,3 @@
-# vNext
-- Fix bug where RemoveWeak would sometimes remove too many handlers
-- Use Invoke iso DynamicInvoke for better performance
-
 # 7.0.0
 - Removed Nuke
 - Updated to .NET 8
@@ -10,6 +6,8 @@
 - Pipelines now fully written in github actions
 - Updated dependencies
 - Added documentation comments to `ICourier`, `CourierInjector` and `CourierOptions`
+- Use Invoke iso DynamicInvoke for better performance
+- Fix bug where RemoveWeak would sometimes remove too many handlers
 
 # 6.0.0
 - Update MediatR to version 12
