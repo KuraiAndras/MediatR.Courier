@@ -1,4 +1,4 @@
-﻿namespace MediatR.Courier.Examples.Shared.Notifications;
+﻿namespace MediatR.Courier.Examples.Wpf.Core.Notifications;
 
 public sealed class ExampleNotification : INotification
 {

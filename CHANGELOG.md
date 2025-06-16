@@ -1,3 +1,15 @@
+# vNext
+- Use Invoke iso DynamicInvoke for better performance
+
+# 7.0.0
+- Removed Nuke
+- Updated to .NET 8
+- Fixed sonarcloud
+- Removed old azure devops pipelines
+- Pipelines now fully written in github actions
+- Updated dependencies
+- Added documentation comments to `ICourier`, `CourierInjector` and `CourierOptions`
+
 # 6.0.0
 - Update MediatR to version 12
 - Deprecate DI package

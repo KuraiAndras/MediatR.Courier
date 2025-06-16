@@ -1,4 +1,4 @@
-﻿using MediatR.Courier.TestResources;
+﻿using MediatR.Courier.Tests.TestResources;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,7 +40,7 @@ public class DependencyInjectionTests
 
         courier.Subscribe<TestNotification>(NotificationAction);
 
-        await mediator.Publish(new TestNotification()).ConfigureAwait(false);
+        await mediator.Publish(new TestNotification());
 
         Assert.True(receivedMessage);
     }
