@@ -1,4 +1,4 @@
-﻿namespace MediatR.Courier.Examples.Shared.Requests;
+﻿namespace MediatR.Courier.Examples.Wpf.Core.Requests;
 
 public sealed class IncrementCallCountCommand : IRequest
 {

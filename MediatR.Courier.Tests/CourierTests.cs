@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-using MediatR.Courier.TestResources;
+using MediatR.Courier.Tests.TestResources;
 
 namespace MediatR.Courier.Tests;
 
@@ -18,14 +18,14 @@ public sealed class CourierTests
 
         async void NotificationAction(TestNotification _, CancellationToken cancellationToken)
         {
-            await Task.Delay(delayTime, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(delayTime, cancellationToken);
 
             receivedMessage = true;
         }
 
         mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         if (delayTime.Ticks == 0)
         {
@@ -48,7 +48,7 @@ public sealed class CourierTests
 
         mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.True(receivedMessage);
     }
@@ -64,12 +64,12 @@ public sealed class CourierTests
         {
             receivedMessage = true;
 
-            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
         }
 
         mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         Assert.True(receivedMessage);
     }
@@ -85,13 +85,13 @@ public sealed class CourierTests
 
         mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
-        Assert.True(receivedMessageCount == 1);
+        Assert.Equal(1, receivedMessageCount);
     }
 
     [Fact]
@@ -105,18 +105,18 @@ public sealed class CourierTests
         {
             ++receivedMessageCount;
 
-            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
         }
 
         mediatRCourier.Subscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
         mediatRCourier.UnSubscribe<TestNotification>(NotificationAction);
 
-        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None).ConfigureAwait(false);
+        await mediatRCourier.Handle(new TestNotification(), CancellationToken.None);
 
-        Assert.True(receivedMessageCount == 1);
+        Assert.Equal(1, receivedMessageCount);
     }
 
     private sealed class AsyncTestData : IEnumerable<object[]>
