@@ -1,3 +1,6 @@
+# vNext
+- Use Invoke iso DynamicInvoke for better performance
+
 # 7.0.0
 - Removed Nuke
 - Updated to .NET 8
