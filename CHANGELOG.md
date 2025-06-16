@@ -8,6 +8,7 @@
 - Added documentation comments to `ICourier`, `CourierInjector` and `CourierOptions`
 - Use Invoke iso DynamicInvoke for better performance
 - Fix bug where RemoveWeak would sometimes remove too many handlers
+- Add `UseTaskWhenAll` option for parallel notification handling
 
 # 6.0.0
 - Update MediatR to version 12
