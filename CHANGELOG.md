@@ -1,7 +1,7 @@
 # 7.0.0
 - Removed Nuke
 - Updated to .NET 8
-- Fixed sonarcloud
+- Fixed sonarcloud. Now only run on master pushes, on PRs we only run dotnet test and format
 - Removed old azure devops pipelines
 - Pipelines now fully written in github actions
 - Updated dependencies
