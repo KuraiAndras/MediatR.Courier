@@ -1,3 +1,7 @@
+# 7.0.1
+- Remove unnecessary check for _options.UseTaskWhenAll
+- README: Add 'Parallel notification handling' section
+
 # 7.0.0
 - Removed Nuke
 - Updated to .NET 8

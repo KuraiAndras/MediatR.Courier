@@ -165,6 +165,26 @@ courier.SubscribeWeak<MyNotification>((notification, cancellation) => /*...*/);
 
 You can configure how the Courier awaits the sent notifications. To change the behavior modify the `CaptureThreadContext` property on the `CourierOptions` class. When using dependency injection, you can change this behavior during runtime, because the `CourierOptions` is accessible through DI.
 
+### Parallel notification handling
+
+You can configure whether notification handlers should run sequentially or in parallel by using the `UseTaskWhenAll` property on the `CourierOptions` class:
+
+```c#
+// Configure at registration time
+services.AddCourier(typeof(MyType).Assembly, options => 
+{
+    options.UseTaskWhenAll = true; // Enable parallel execution of handlers
+});
+
+// Or modify at runtime through dependency injection
+var options = serviceProvider.GetRequiredService<CourierOptions>();
+options.UseTaskWhenAll = true;
+```
+
+When `UseTaskWhenAll` is set to `true`, asynchronous notification handlers are collected and awaited concurrently using `Task.WhenAll`.
+
+When set to `false` (the default), handlers are awaited sequentially.
+
 ## Gotchas
 
 * No ordering is guaranteed when calling the subscribed methods
